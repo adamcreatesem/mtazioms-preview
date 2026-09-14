@@ -17,6 +17,8 @@
 </head>
 <body>
 
+<div class="grain" aria-hidden="true"></div>
+
 <header class="topbar">
   <div class="wrap topbar-in">
     <a class="brand" href="#top">
@@ -41,11 +43,12 @@
 <section id="top" class="hero">
   <div class="hero-bg" role="presentation"></div>
   <div class="wrap hero-in">
-    <img src="assets/img/logo.jpg" alt="" class="hero-logo">
-    <h1 class="hero-name">MTAZIOMS</h1>
-    <p class="hero-tag" data-i18n="hero_tag">Where Elegance Meets Luxury</p>
-    <p class="hero-sub" data-i18n="hero_sub">Luxury abayas, diriya &amp; mukhawir — hand-picked in Addis Ababa. Free delivery in the city.</p>
-    <div class="hero-cta">
+    <span class="hero-eyebrow hero-rise" data-i18n="hero_eyebrow">Addis Ababa · Jemo 1</span>
+    <img src="assets/img/logo.jpg" alt="" class="hero-logo hero-rise d1">
+    <h1 class="hero-name hero-rise d2">MTAZIOMS</h1>
+    <p class="hero-tag hero-rise d3" data-i18n="hero_tag">Where Elegance Meets Luxury</p>
+    <p class="hero-sub hero-rise d3" data-i18n="hero_sub">Luxury abayas, diriya &amp; mukhawir — hand-picked in Addis Ababa. Free delivery in the city.</p>
+    <div class="hero-cta hero-rise d4">
       <a class="btn btn-gold" href="#collection" data-i18n="hero_browse">Browse the Collection</a>
       <a class="btn btn-ghost" id="heroWhatsApp" href="#" target="_blank" rel="noopener" data-i18n="hero_order">Order on WhatsApp</a>
     </div>
@@ -54,7 +57,7 @@
 
 <section id="collection" class="collection">
   <div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head reveal">
       <h2 class="sec-title" data-i18n="collection_title">The Collection</h2>
       <p class="sec-sub" data-i18n="collection_sub">Tap any piece to view, choose your size, and send your order in one tap.</p>
     </div>
@@ -68,7 +71,7 @@
 </section>
 
 <section class="strip">
-  <div class="wrap strip-in">
+  <div class="wrap strip-in" id="stripTrack">
     <div class="strip-item"><span class="strip-icon">✦</span><span data-i18n="strip_delivery">Free delivery in Addis Ababa</span></div>
     <div class="strip-item"><span class="strip-icon">✦</span><span data-i18n="strip_premium">Hand-picked premium fabrics</span></div>
     <div class="strip-item"><span class="strip-icon">✦</span><span data-i18n="strip_order">Order in one tap — no account needed</span></div>
@@ -77,11 +80,11 @@
 
 <section id="visit" class="visit">
   <div class="wrap visit-in">
-    <div class="visit-photos">
+    <div class="visit-photos reveal">
       <img src="assets/img/store-collection.jpg" alt="Inside the MTAZIOMS store" loading="lazy">
       <img src="assets/img/store-rack.jpg" alt="The collection rack" loading="lazy">
     </div>
-    <div class="visit-info">
+    <div class="visit-info reveal">
       <h2 class="sec-title" data-i18n="visit_title">Visit the Boutique</h2>
       <p class="visit-line" id="visitAddress"></p>
       <p class="visit-line" id="visitHours"></p>

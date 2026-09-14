@@ -20,6 +20,7 @@ const state = {
 const I18N = {
   en: {
     nav_collection: 'Collection', nav_visit: 'Visit Us', nav_contact: 'Contact',
+    hero_eyebrow: 'Addis Ababa · Jemo 1 · Sun Moon Star Mall',
     hero_tag: 'Where Elegance Meets Luxury',
     hero_sub: 'Luxury abayas, diriya & mukhawir — hand-picked in Addis Ababa. Free delivery in the city.',
     hero_browse: 'Browse the Collection', hero_order: 'Order on WhatsApp',
@@ -49,6 +50,7 @@ const I18N = {
   },
   am: {
     nav_collection: 'ስብስብ', nav_visit: 'ይጎብኙን', nav_contact: 'አግኙን',
+    hero_eyebrow: 'አዲስ አበባ · ጀሞ 1 · ሳን ሙን ስታር ሞል',
     hero_tag: 'ቀሰምን ገፅነትን አንድ ላይ',
     hero_sub: 'የፕሪሚየም አባያ፣ ድሪያ እና ሙካወር — በአዲስ አበባ ተመርጦ የቀረበ። ከተማ ውስጥ ነጻ ማድረስ።',
     hero_browse: 'ስብስቡን ይመልከቱ', hero_order: 'በዋትስአፕ ይዘዙ',
@@ -133,6 +135,12 @@ function renderGrid() {
   $('#emptyMsg').hidden = list.length > 0;
   $$('.card', grid).forEach((el) =>
     el.addEventListener('click', () => openModal(el.dataset.id)));
+  // entrance stagger (cap the delay so long lists don't crawl in)
+  $$('.card', grid).forEach((el, i) => {
+    el.style.transitionDelay = `${Math.min(i * 60, 420)}ms`;
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+    el.addEventListener('transitionend', () => { el.style.transitionDelay = ''; }, { once: true });
+  });
 }
 
 function renderCats() {
@@ -275,5 +283,17 @@ async function boot() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { closeModal(); closeCart(); }
   });
+
+  // marquee: duplicate the item set once for a seamless -50% loop (clones keep data-i18n)
+  const track = $('#stripTrack');
+  if (track) [...track.children].forEach((child) => track.appendChild(child.cloneNode(true)));
+
+  // section reveal on scroll (static elements only; cards stagger in renderGrid)
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.12 });
+  $$('.reveal').forEach((el) => io.observe(el));
 }
 boot();
