@@ -19,10 +19,26 @@
     "currency": "ETB"
   },
   "categories": [
-    { "id": "abaya", "en": "Abayas", "am": "አባያዎች" },
-    { "id": "diriya", "en": "Diriya", "am": "ድሪያ" },
-    { "id": "mukhawir", "en": "Mukhawir", "am": "ሙካወር" },
-    { "id": "dresses", "en": "Dresses", "am": "ቀሚሶች" }
+    {
+      "id": "abaya",
+      "en": "Abayas",
+      "am": "አባያዎች"
+    },
+    {
+      "id": "diriya",
+      "en": "Diriya",
+      "am": "ድሪያ"
+    },
+    {
+      "id": "mukhawir",
+      "en": "Mukhawir",
+      "am": "ሙካወር"
+    },
+    {
+      "id": "dresses",
+      "en": "Dresses",
+      "am": "ቀሚሶች"
+    }
   ],
   "products": [
     {
@@ -97,10 +113,10 @@
     },
     {
       "id": "ivory-diriya-set",
-      "name_en": "Ivory Floral Diriya Set",
+      "name_en": "Mint Embroidered Diriya Set",
       "name_am": "የአበባ ጌጣጌጥ አይቮሪ ድሪያ",
       "category": "diriya",
-      "color_en": "Ivory",
+      "color_en": "Light mint",
       "color_am": "አይቮሪ",
       "desc_en": "Ivory two-piece with soft floral embroidery and matching headscarf. Nikah and holiday favorite.",
       "desc_am": "ከራሱ ጋር የሚሄድ ማሽነር ያለው የአበባ ጌጣጌጥ አይቮሪ ድሪያ።",
@@ -128,9 +144,9 @@
       "name_en": "Royal Blue Floral Mukhawir",
       "name_am": "ሮያል ብሉ ሙካወር",
       "category": "mukhawir",
-      "color_en": "Royal blue / floral",
+      "color_en": "White / royal blue",
       "color_am": "ሮያል ብሉ",
-      "desc_en": "Two-piece mukhawir in royal blue floral print with matching patterned scarf.",
+      "desc_en": "White floral-print mukhawir with its embroidered royal blue scarf. Light, festive and comfortable.",
       "desc_am": "ከራሱ ጋር የሚሄድ ማሽነር ያለው ሮያል ብሉ ሙካወር።",
       "price": null,
       "img": "assets/img/prod-floral-mukhawir.jpg",
