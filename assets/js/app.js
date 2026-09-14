@@ -1,4 +1,4 @@
-/* MTAZIOMS catalog — vanilla JS, no dependencies. */
+/* MTAZIOMS catalog. Vanilla JS, no dependencies. */
 'use strict';
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -22,20 +22,20 @@ const I18N = {
     nav_collection: 'Collection', nav_visit: 'Visit Us', nav_contact: 'Contact',
     hero_eyebrow: 'Addis Ababa · Jemo 1 · Sun Moon Star Mall',
     hero_tag: 'Where Elegance Meets Luxury',
-    hero_sub: 'Luxury abayas, diriya & mukhawir — hand-picked in Addis Ababa. Free delivery in the city.',
+    hero_sub: 'Luxury abayas, diriya & mukhawir, hand-picked in Addis Ababa. Free delivery in the city.',
     hero_browse: 'Browse the Collection', hero_order: 'Order on WhatsApp',
     collection_title: 'The Collection',
     collection_sub: 'Tap any piece to view, choose your size, and send your order in one tap.',
     search_ph: 'Search colors, styles…',
-    empty: 'Nothing matches that search — try another color or style.',
+    empty: 'Nothing matches that search. Try another color or style.',
     strip_delivery: 'Free delivery in Addis Ababa',
     strip_premium: 'Hand-picked premium fabrics',
-    strip_order: 'Order in one tap — no account needed',
+    strip_order: 'Order in one tap, no account needed',
     visit_title: 'Visit the Boutique',
     visit_maps: 'Open in Google Maps',
     footer_tag: 'Where Elegance Meets Luxury',
     m_add: 'Add to Order', m_direct: 'Ask about this piece',
-    m_note: 'Confirming stock takes one message — we reply fast.',
+    m_note: 'Confirming stock takes one message. We reply fast.',
     cart_title: 'Your Order',
     cart_empty: 'Your order list is empty. Tap a piece you love and add it.',
     cart_name_ph: 'Your name',
@@ -52,20 +52,20 @@ const I18N = {
     nav_collection: 'ስብስብ', nav_visit: 'ይጎብኙን', nav_contact: 'አግኙን',
     hero_eyebrow: 'አዲስ አበባ · ጀሞ 1 · ሳን ሙን ስታር ሞል',
     hero_tag: 'ቀሰምን ገፅነትን አንድ ላይ',
-    hero_sub: 'የፕሪሚየም አባያ፣ ድሪያ እና ሙካወር — በአዲስ አበባ ተመርጦ የቀረበ። ከተማ ውስጥ ነጻ ማድረስ።',
+    hero_sub: 'የፕሪሚየም አባያ፣ ድሪያ እና ሙካወር፣ በአዲስ አበባ ተመርጦ የቀረበ። ከተማ ውስጥ ነጻ ማድረስ።',
     hero_browse: 'ስብስቡን ይመልከቱ', hero_order: 'በዋትስአፕ ይዘዙ',
     collection_title: 'ስብስብ',
     collection_sub: 'የሚወዱትን በጫኑ፣ መጠንዎን ይምረጡ፣ ትዕዛዝዎን በአንድ ጫን ይላኩ።',
     search_ph: 'ቀለም፣ ዓይነት ይፈልጉ…',
-    empty: 'ከፍለጋዎ ጋር የሚመሳሰል አልተገኘም — ሌላ ይሞክሩ።',
+    empty: 'ከፍለጋዎ ጋር የሚመሳሰል አልተገኘም። ሌላ ይሞክሩ።',
     strip_delivery: 'በአዲስ አበባ ነጻ ማድረስ',
     strip_premium: 'በእጅ የተመረጡ የተለዩ ጨርቆች',
-    strip_order: 'በአንድ ጫን ይዘዙ — መመዝገብ አያስፈልግም',
+    strip_order: 'በአንድ ጫን ይዘዙ፣ መመዝገብ አያስፈልግም',
     visit_title: 'ቢንግተናችንን ይጎብኙን',
     visit_maps: 'በGoogle Maps ክፈት',
     footer_tag: 'ቀሰምን ገፅነትን አንድ ላይ',
     m_add: 'ወደ ትዕዛዝ ጨምር', m_direct: 'ስለ እንደዚህ ጠይቅ',
-    m_note: 'ያለበትን ለማረጋገጥ አንድ መልእክት ብቻ ይሰፍናል — በፍጥነት እንመልሳለን።',
+    m_note: 'ያለበትን ለማረጋገጥ አንድ መልእክት ብቻ ይሰፍናል። በፍጥነት እንመልሳለን።',
     cart_title: 'ትዕዛዝዎ',
     cart_empty: 'ትዕዛዝዎ ባዶ ነው። የሚወዱትን በጫኑ ይጨምሩ።',
     cart_name_ph: 'ስምዎ',
@@ -216,7 +216,7 @@ function orderText() {
   const note = $('#cartNote').value.trim();
   const lines = state.cart.map((item, i) => {
     const p = state.products.find((x) => x.id === item.id);
-    return `${i + 1}. ${p ? p.name_en : item.id} — Size ${item.size}${p && p.price != null ? ` — ${money(p.price)}` : ''}`;
+    return `${i + 1}. ${p ? p.name_en : item.id}, Size ${item.size}${p && p.price != null ? `, ${money(p.price)}` : ''}`;
   });
   return [
     `Hello MTAZIOMS! I would like to order:`,
@@ -224,7 +224,7 @@ function orderText() {
     ...lines,
     '',
     note ? `Delivery/notes: ${note}` : '',
-    name ? `— ${name}` : '',
+    name ? `From: ${name}` : '',
   ].filter(Boolean).join('\n');
 }
 function openCart() {

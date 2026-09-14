@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MTAZIOMS — Product Manager</title>
+<title>MTAZIOMS · Product Manager</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -18,11 +18,18 @@ h2 { font-size:.95rem; letter-spacing:.16em; text-transform:uppercase; color:var
 .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
 label { display:block; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); margin-bottom:5px; }
-input, select, textarea { width:100%; background:#14120e; border:1px solid var(--line); color:var(--ivory); padding:10px 12px; border-radius:8px; font-family:inherit; font-size:.92rem; outline:none; }
-input:focus, select:focus, textarea:focus { border-color:var(--gold); }
-.btn { display:inline-block; background:linear-gradient(135deg,var(--gold),#a8861d); color:#171204; font-weight:600; border:none; padding:12px 26px; border-radius:999px; font-family:inherit; font-size:.82rem; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; }
-.btn.ghost { background:none; border:1px solid var(--line); color:var(--ivory); font-weight:400; }
-.btn:hover { filter:brightness(1.1); }
+input, select, textarea { width:100%; background:#14120e; border:1px solid var(--line); color:var(--ivory); padding:11px 14px; border-radius:10px; font-family:inherit; font-size:.92rem; outline:none; caret-color:var(--gold); box-shadow:inset 0 2px 4px rgba(0,0,0,.25); transition:border-color .3s, box-shadow .3s, background .3s; }
+input::placeholder, textarea::placeholder { color:rgba(183,174,156,.45); }
+input:hover, select:hover, textarea:hover { border-color:rgba(201,162,39,.45); }
+input:focus, select:focus, textarea:focus { border-color:var(--gold); box-shadow:inset 0 2px 4px rgba(0,0,0,.25), 0 0 0 3px rgba(201,162,39,.12); background:#17140f; }
+input[type=file] { color:var(--dim); font-size:.85rem; }
+input[type=file]::file-selector-button { background:none; border:1px solid var(--line); color:var(--ivory); padding:8px 16px; border-radius:999px; font-family:inherit; font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; margin-right:12px; transition:border-color .3s, color .3s; }
+input[type=file]::file-selector-button:hover { border-color:var(--gold); color:var(--gold-soft); }
+input[type=checkbox] { accent-color:var(--gold); width:auto; box-shadow:none; }
+.btn { display:inline-block; background:linear-gradient(135deg,var(--gold),#a8861d); color:#171204; font-weight:600; border:none; padding:12px 26px; border-radius:999px; font-family:inherit; font-size:.82rem; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; transition:transform .4s cubic-bezier(.32,.72,0,1), box-shadow .4s cubic-bezier(.32,.72,0,1), filter .3s; }
+.btn:hover { filter:brightness(1.08); transform:translateY(-1px); box-shadow:0 10px 26px -12px rgba(201,162,39,.55); }
+.btn:active { transform:scale(.97); }
+.btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
 .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:16px; }
 .preview { width:96px; height:128px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }
 .list-item { display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(201,162,39,.12); }
@@ -35,7 +42,7 @@ input:focus, select:focus, textarea:focus { border-color:var(--gold); }
 </head>
 <body>
 <h1>MTAZIOMS · Product Manager</h1>
-<p class="sub">Add new arrivals with a phone photo — this page compresses the photo and updates the catalog file.
+<p class="sub">Add new arrivals with a phone photo. This page compresses the photo and builds the catalog file.
 Hand the exported <b>products.json</b> + <b>photos</b> folder to your webmaster (or send them to Adam) and the new pieces appear on the site.</p>
 
 <div class="card">
@@ -51,7 +58,7 @@ Hand the exported <b>products.json</b> + <b>photos</b> folder to your webmaster 
   <h2>2 · Add a product</h2>
   <div class="grid2">
     <div>
-      <label>Photo (phone photo is fine — auto-compressed)</label>
+      <label>Photo (phone photo is fine, auto-compressed)</label>
       <input type="file" id="photo" accept="image/*">
       <div class="row"><img id="photoPrev" class="preview" hidden alt=""></div>
     </div>
@@ -93,7 +100,7 @@ Hand the exported <b>products.json</b> + <b>photos</b> folder to your webmaster 
     <button class="btn" id="expJson">Download products.json</button>
     <button class="btn ghost" id="expPhotos">Download photos (one by one)</button>
   </div>
-  <p class="hint">Send both to Adam (@your Telegram) or to whoever manages the site — files drop straight in.</p>
+  <p class="hint">Send both files to Adam on Telegram or to whoever manages the site. They drop straight in.</p>
 </div>
 
 <script>
