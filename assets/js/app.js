@@ -106,8 +106,15 @@ const money = (p) => (p == null ? t('inquired') : t('price_fmt')(p));
 function saveCart() {
   localStorage.setItem('mtz_cart', JSON.stringify(state.cart));
   const n = state.cart.length;
-  $('#cartCount').hidden = n === 0;
-  $('#cartCount').textContent = n;
+  const badge = $('#cartCount');
+  badge.hidden = n === 0;
+  if (badge.textContent !== String(n)) {
+    badge.textContent = n;
+    badge.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1)' }],
+      { duration: 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+    );
+  }
 }
 
 /* ---------- i18n paint ---------- */
@@ -151,12 +158,17 @@ function renderGrid() {
   $('#emptyMsg').hidden = list.length > 0;
   $$('.card', grid).forEach((el) =>
     el.addEventListener('click', () => openModal(el.dataset.id)));
-  // entrance stagger (cap the delay so long lists don't crawl in)
-  $$('.card', grid).forEach((el, i) => {
-    el.style.transitionDelay = `${Math.min(i * 60, 420)}ms`;
-    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
-    el.addEventListener('transitionend', () => { el.style.transitionDelay = ''; }, { once: true });
-  });
+  // entrance stagger on first paint only; filters/search re-render without re-animating (no flicker)
+  if (!state.gridAnimated) {
+    state.gridAnimated = true;
+    $$('.card', grid).forEach((el, i) => {
+      el.style.transitionDelay = `${Math.min(i * 60, 420)}ms`;
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+      el.addEventListener('transitionend', () => { el.style.transitionDelay = ''; }, { once: true });
+    });
+  } else {
+    $$('.card', grid).forEach((el) => el.classList.add('in'));
+  }
 }
 
 function renderCats() {
@@ -174,6 +186,7 @@ function renderCats() {
 /* ---------- modal ---------- */
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
 function openModal(id) {
+  // (modal open/close now driven by [data-open] for symmetric exit transitions)
   const p = state.products.find((x) => x.id === id);
   if (!p) return;
   state.current = p;
@@ -196,11 +209,12 @@ function openModal(id) {
     $$('.size-btn', sz).forEach((x) => x.classList.toggle('active', x === b));
   }));
   $('#mDirect').href = waLink(`Hello MTAZIOMS! Is "${p.name_en}" (${L(p, 'color')}) available?`);
-  $('#modal').hidden = false;
+  $('#modal').setAttribute('data-open', '');
   document.body.style.overflow = 'hidden';
 }
+/* ---------- overlay open/close (data-open driven) ---------- */
 function closeModal() {
-  $('#modal').hidden = true;
+  $('#modal').removeAttribute('data-open');
   document.body.style.overflow = '';
 }
 
@@ -255,11 +269,11 @@ function orderText() {
 }
 function openCart() {
   renderCart();
-  $('#cart').hidden = false;
+  $('#cart').setAttribute('data-open', '');
   document.body.style.overflow = 'hidden';
 }
 function closeCart() {
-  $('#cart').hidden = true;
+  $('#cart').removeAttribute('data-open');
   document.body.style.overflow = '';
 }
 
