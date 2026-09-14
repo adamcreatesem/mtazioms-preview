@@ -1,4 +1,4 @@
-/* MTAZIOMS app. Vanilla JS, no dependencies. Data contract: data/products.json (admin tool writes it). */
+/* MTAZIOMS gallery edition. Vanilla JS, no dependencies. Data contract: data/products.json (admin tool writes it). */
 'use strict';
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -8,14 +8,9 @@ const state = {
   products: [],
   settings: {},
   categories: [],
-  filterCat: 'all',
-  search: '',
   favOnly: false,
-  cart: JSON.parse(localStorage.getItem('mtz_cart') || '[]'), // [{id, size}]
+  cart: JSON.parse(localStorage.getItem('mtz_cart') || '[]'),
   favs: new Set(JSON.parse(localStorage.getItem('mtz_favs') || '[]')),
-  current: null,
-  currentSize: null,
-  gridAnimated: false,
 };
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -37,29 +32,88 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
 }
 
-/* ---------- favorites ---------- */
-function saveFavs() {
-  localStorage.setItem('mtz_favs', JSON.stringify([...state.favs]));
-  const n = state.favs.size;
-  const badge = $('#favCount');
-  badge.hidden = n === 0;
-  badge.textContent = n;
-  $('#favChip').hidden = n === 0;
-  $('#favChip').innerHTML = n === 0 ? '&#9825; Saved' : `${state.favOnly ? '&#9829;' : '&#9825;'} Saved (${n})`;
-  $('#favChip').classList.toggle('active', state.favOnly);
-}
-function saveCart() {
-  localStorage.setItem('mtz_cart', JSON.stringify(state.cart));
-  const n = state.cart.length;
-  const badge = $('#cartCount');
-  badge.hidden = n === 0;
-  if (badge.textContent !== String(n)) {
-    badge.textContent = n;
-    badge.animate(
-      [{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1)' }],
-      { duration: 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
-    );
+/* ---------- counters ---------- */
+function bump(el, n) {
+  const shown = Number(el.textContent) || 0;
+  el.hidden = n === 0;
+  el.textContent = n;
+  if (shown !== n) {
+    el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1)' }],
+      { duration: 300, easing: 'cubic-bezier(.23,1,.32,1)' });
   }
+}
+function paintCounts() {
+  bump($('#cartCount'), state.cart.length);
+  bump($('#favCount'), state.favs.size);
+  bump($('#dockCartN'), state.cart.length);
+  bump($('#dockFavN'), state.favs.size);
+  const chip = $('#favChip');
+  chip.hidden = state.favs.size === 0;
+  chip.innerHTML = `${state.favOnly ? '&#9829;' : '&#9825;'} Saved (${state.favs.size})`;
+  chip.classList.toggle('active', state.favOnly);
+}
+
+/* ---------- gallery ---------- */
+function visibleProducts() {
+  return state.favOnly ? state.products.filter((p) => state.favs.has(p.id)) : state.products;
+}
+
+function renderGallery() {
+  const list = visibleProducts();
+  const g = $('#gallery');
+  g.innerHTML = list.map((p) => {
+    const out = isOut(p);
+    const faved = state.favs.has(p.id);
+    const alt = state.products.indexOf(p);
+    return `
+    <article class="panel ${out ? 'out' : ''}" data-id="${p.id}" data-alt="${alt}">
+      <div class="panel-media" data-open>
+        <img src="${p.img}" alt="${p.name_en}" loading="lazy" draggable="false">
+        ${p.featured ? '<span class="panel-badge">Featured</span>' : ''}
+        ${out ? '<span class="soldout">Sold out</span>' : ''}
+        <button class="fav-btn ${faved ? 'on' : ''}" data-fav="${p.id}" aria-pressed="${faved}" aria-label="${faved ? 'Remove from' : 'Save to'} saved pieces">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1  1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </button>
+      </div>
+      <div class="panel-info">
+        <p class="panel-cat">${catName(p.category)}</p>
+        <h3 class="panel-name">${p.name_en}</h3>
+        <p class="panel-color">${p.color_en || ''}</p>
+        <p class="panel-desc">${p.desc_en || ''}</p>
+        <p class="panel-price ${p.price == null || out ? 'inq' : ''}">${out ? 'Currently sold out' : money(p.price)}</p>
+        ${out ? '<span class="panel-stock">Sold out</span>' : ''}
+        <div class="panel-actions">
+          <button class="btn btn-ink" data-open ${out ? 'disabled' : ''}>${out ? 'Sold out' : 'Choose size'}</button>
+          <a class="btn btn-line" data-ask="${p.id}" target="_blank" rel="noopener">${out ? 'Ask when it is back' : 'Ask about this piece'}</a>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+
+  $('#emptyMsg').hidden = list.length > 0;
+
+  $$('.panel', g).forEach((el) => {
+    const p = state.products[+el.dataset.alt];
+    el.querySelector('[data-ask]').href = waLink(isOut(p)
+      ? `Hello MTAZIOMS! When is "${p.name_en}" (${p.color_en}) back in stock?`
+      : `Hello MTAZIOMS! Is "${p.name_en}" (${p.color_en}) available?`);
+  });
+
+  $$('[data-fav]', g).forEach((el) => el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleFav(el.dataset.fav);
+  }));
+  $$('[data-open]', g).forEach((el) => el.addEventListener('click', (e) => {
+    openChooser(el.closest('.panel'));
+  }));
+
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.14 });
+  $$('.panel', g).forEach((el) => io.observe(el));
 }
 
 function toggleFav(id) {
@@ -70,135 +124,56 @@ function toggleFav(id) {
     state.favs.add(id);
     toast('Saved. Find it under Saved anytime');
   }
-  saveFavs();
-  renderRail();
-}
-
-/* ---------- lookbook rail ---------- */
-function filtered() {
-  const q = state.search.trim().toLowerCase();
-  return state.products.filter((p) => {
-    if (state.filterCat !== 'all' && p.category !== state.filterCat) return false;
-    if (state.favOnly && !state.favs.has(p.id)) return false;
-    if (!q) return true;
-    return [p.name_en, p.color_en, p.desc_en, p.category].join(' ').toLowerCase().includes(q);
+  localStorage.setItem('mtz_favs', JSON.stringify([...state.favs]));
+  paintCounts();
+  if (state.favOnly) renderGallery();
+  else $$('.panel').forEach((el) => {
+    const on = state.favs.has(el.dataset.id);
+    el.querySelector('.fav-btn').classList.toggle('on', on);
+    el.querySelector('.fav-btn').setAttribute('aria-pressed', on);
   });
 }
 
-function renderRail() {
-  const list = filtered();
-  const rail = $('#rail');
-  rail.innerHTML = list.map((p) => {
-    const out = isOut(p);
-    const faved = state.favs.has(p.id);
-    return `
-    <article class="piece ${out ? 'out' : ''}" data-id="${p.id}">
-      <div class="piece-media">
-        <img src="${p.img}" alt="${p.name_en}" loading="lazy" draggable="false">
-        ${p.featured ? '<span class="piece-badge">Featured</span>' : ''}
-        ${out ? '<span class="soldout">Sold out</span>' : ''}
-        <button class="fav-btn ${faved ? 'on' : ''}" data-fav="${p.id}" aria-label="${faved ? 'Remove from' : 'Save to'} saved pieces" aria-pressed="${faved}">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-        </button>
-      </div>
-      <div class="piece-info">
-        <h3 class="piece-name">${p.name_en}</h3>
-        <p class="piece-price ${p.price == null ? 'inq' : ''}">${money(p.price)}</p>
-      </div>
-    </article>`;
-  }).join('');
-  $('#emptyMsg').hidden = list.length > 0;
-  $$('.piece', rail).forEach((el) => el.addEventListener('click', () => openQv(el.dataset.id)));
-  $$('[data-fav]', rail).forEach((el) => el.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleFav(el.dataset.fav);
-  }));
-  if (!state.gridAnimated) {
-    state.gridAnimated = true;
-    $$('.piece', rail).forEach((el, i) => {
-      el.style.transitionDelay = `${Math.min(i * 70, 490)}ms`;
-      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
-      el.addEventListener('transitionend', () => { el.style.transitionDelay = ''; }, { once: true });
-    });
-  } else {
-    $$('.piece', rail).forEach((el) => el.classList.add('in'));
+/* ---------- size chooser (inline in panel) ---------- */
+let chooserPanel = null;
+function closeChooser() {
+  if (chooserPanel) {
+    chooserPanel.querySelector('.sizes-row')?.remove();
+    chooserPanel.querySelector('.panel-actions')?.classList.remove('hidden');
+    chooserPanel = null;
   }
 }
-
-function renderCats() {
-  const wrap = $('#catFilters');
-  const cats = [{ id: 'all', en: 'All' }, ...state.categories];
-  wrap.innerHTML = cats.map((c) => `
-    <button class="cat-btn ${c.id === state.filterCat ? 'active' : ''}" data-cat="${c.id}">${c.en}</button>`).join('');
-  $$('.cat-btn', wrap).forEach((b) => b.addEventListener('click', () => {
-    state.filterCat = b.dataset.cat;
-    renderCats();
-    renderRail();
+function openChooser(panel) {
+  if (chooserPanel === panel) { closeChooser(); return; }
+  closeChooser();
+  chooserPanel = panel;
+  const p = state.products[+panel.dataset.alt];
+  const actions = panel.querySelector('.panel-actions');
+  actions.classList.add('hidden');
+  const row = document.createElement('div');
+  row.className = 'sizes-row';
+  row.innerHTML = `
+    <p class="sizes-eyebrow">Pick a size</p>
+    <div class="sizes-list">${SIZES.map((s) => `<button class="size-pick ${s === 'M' ? 'active' : ''}" data-size="${s}">${s}</button>`).join('')}</div>
+    <div class="sizes-confirm"><button class="btn btn-ink confirm-btn">Add to reserve list</button><button class="sizes-cancel">Cancel</button></div>`;
+  actions.after(row);
+  row.querySelector('.confirm-btn').addEventListener('click', () => {
+    const size = row.querySelector('.size-pick.active').dataset.size;
+    addToCart(p.id, size);
+    closeChooser();
+  });
+  row.querySelector('.sizes-cancel').addEventListener('click', closeChooser);
+  $$('.size-pick', row).forEach((b) => b.addEventListener('click', () => {
+    $$('.size-pick', row).forEach((x) => x.classList.toggle('active', x === b));
   }));
 }
 
-/* ---------- rail arrows ---------- */
-function railStep() {
-  const piece = $('.piece');
-  return piece ? piece.getBoundingClientRect().width + 22 : 294;
-}
-function updateArrows() {
-  const wrap = $('.rail-wrap');
-  const max = wrap.scrollWidth - wrap.clientWidth;
-  $('#railPrev').disabled = wrap.scrollLeft <= 4;
-  $('#railNext').disabled = wrap.scrollLeft >= max - 4;
+/* ---------- reserve list ---------- */
+function saveCart() {
+  localStorage.setItem('mtz_cart', JSON.stringify(state.cart));
+  paintCounts();
 }
 
-/* ---------- quick view flyout ---------- */
-function fillQv(p) {
-  state.current = p;
-  state.currentSize = 'M';
-  $('#qvImg').src = p.img;
-  $('#qvImg').alt = p.name_en;
-  $('#qvCat').textContent = catName(p.category);
-  $('#qvName').textContent = p.name_en;
-  $('#qvColor').textContent = p.color_en;
-  $('#qvDesc').textContent = p.desc_en || '';
-  const priceEl = $('#qvPrice');
-  priceEl.textContent = isOut(p) ? 'Currently sold out' : money(p.price);
-  priceEl.classList.toggle('inq', p.price == null || isOut(p));
-  const out = isOut(p);
-  $('#qvStockBadge').hidden = !out;
-  const add = $('#qvAdd');
-  add.disabled = out;
-  add.textContent = out ? 'Sold out' : 'Add to Bag';
-  $('#qvDirect').textContent = out ? 'Ask when it is back' : 'Ask about this piece';
-  $('#qvDirect').href = waLink(out
-    ? `Hello MTAZIOMS! When is "${p.name_en}" (${p.color_en}) back in stock?`
-    : `Hello MTAZIOMS! Is "${p.name_en}" (${p.color_en}) available?`);
-  const sz = $('#qvSizes');
-  sz.innerHTML = SIZES.map((s) => `<button class="size-btn ${s === 'M' ? 'active' : ''}" data-size="${s}">${s}</button>`).join('');
-  $$('.size-btn', sz).forEach((b) => b.addEventListener('click', () => {
-    state.currentSize = b.dataset.size;
-    $$('.size-btn', sz).forEach((x) => x.classList.toggle('active', x === b));
-  }));
-}
-
-function openQv(id) {
-  const p = state.products.find((x) => x.id === id);
-  if (!p) return;
-  fillQv(p);
-  $('#qv').setAttribute('data-open', '');
-  document.body.style.overflow = 'hidden';
-}
-function closeQv() {
-  $('#qv').removeAttribute('data-open');
-  document.body.style.overflow = '';
-}
-function qvStep(dir) {
-  const list = filtered();
-  if (!list.length) return;
-  const idx = list.findIndex((x) => x.id === state.current.id);
-  const next = list[(idx + dir + list.length) % list.length];
-  fillQv(next);
-}
-
-/* ---------- bag ---------- */
 function renderCart() {
   const box = $('#cartItems');
   const merged = [];
@@ -211,45 +186,43 @@ function renderCart() {
     const p = state.products.find((x) => x.id === m.id);
     if (!p) return '';
     return `
-      <div class="cart-item">
+      <div class="cart-line">
         <img src="${p.img}" alt="">
         <div>
-          <p class="ci-name">${p.name_en}</p>
-          <p class="ci-meta">Size: ${m.size}${p.price != null ? ` · ${money(p.price)}` : ''}</p>
+          <p class="cl-name">${p.name_en}</p>
+          <p class="cl-meta">Size: ${m.size}${p.price != null ? ` · ${money(p.price)}` : ''}</p>
         </div>
-        <div class="ci-qty">
-          <button class="qty-btn" data-dec="${idx}" aria-label="One less" ${m.qty === 1 ? 'data-dec-line="1"' : ''}>&#8722;</button>
-          <span class="qty-num">${m.qty}</span>
-          <button class="qty-btn" data-inc="${idx}" aria-label="One more">+</button>
+        <div class="cl-right">
+          <div class="qty">
+            <button data-dec="${idx}" aria-label="One less">&#8722;</button>
+            <span class="n">${m.qty}</span>
+            <button data-inc="${idx}" aria-label="One more">+</button>
+          </div>
+          <button class="cl-rm" data-rm="${idx}" aria-label="Remove">&#10005;</button>
         </div>
-        <button class="ci-rm" data-rm="${idx}" aria-label="Remove">&#10005;</button>
       </div>`;
   }).join('');
   $('#cartEmpty').hidden = merged.length > 0;
   $$('[data-rm]', box).forEach((b) => b.addEventListener('click', () => {
-    // remove the whole line (all sizes of that piece stay untouched)
     const m = merged[+b.dataset.rm];
     state.cart = state.cart.filter((it) => !(it.id === m.id && it.size === m.size));
-    saveCart();
-    renderCart();
+    saveCart(); renderCart();
   }));
   $$('[data-inc]', box).forEach((b) => b.addEventListener('click', () => {
     const m = merged[+b.dataset.inc];
     state.cart.push({ id: m.id, size: m.size });
-    saveCart();
-    renderCart();
+    saveCart(); renderCart();
   }));
   $$('[data-dec]', box).forEach((b) => b.addEventListener('click', () => {
     const m = merged[+b.dataset.dec];
-    if (m.qty === 1) { // minus at 1 removes the line
-      state.cart = state.cart.filter((it) => !(it.id === m.id && it.size === m.size));
-    } else {
+    if (m.qty === 1) state.cart = state.cart.filter((it) => !(it.id === m.id && it.size === m.size));
+    else {
       const rawIdx = state.cart.findIndex((it) => it.id === m.id && it.size === m.size);
       state.cart.splice(rawIdx, 1);
     }
-    saveCart();
-    renderCart();
+    saveCart(); renderCart();
   }));
+
   const count = state.cart.length;
   const known = merged
     .map((m) => ({ m, p: state.products.find((x) => x.id === m.id) }))
@@ -260,6 +233,23 @@ function renderCart() {
     ? `${total.toLocaleString()}<span class="os-known">Known total</span>`
     : '';
   $('#orderSummary').hidden = count === 0;
+}
+
+function addToCart(id, size) {
+  state.cart.push({ id, size });
+  saveCart();
+  openCart();
+  toast('Added to your reserve list');
+}
+
+function openCart() {
+  renderCart();
+  $('#cart').setAttribute('data-open', '');
+  document.body.classList.add('sheet-open');
+}
+function closeCart() {
+  $('#cart').removeAttribute('data-open');
+  document.body.classList.remove('sheet-open');
 }
 
 function orderText() {
@@ -286,16 +276,6 @@ function orderText() {
   ].filter(Boolean).join('\n');
 }
 
-function openCart() {
-  renderCart();
-  $('#cart').setAttribute('data-open', '');
-  document.body.style.overflow = 'hidden';
-}
-function closeCart() {
-  $('#cart').removeAttribute('data-open');
-  document.body.style.overflow = '';
-}
-
 /* ---------- boot ---------- */
 async function boot() {
   const data = await fetch('data/products.json').then((r) => r.json());
@@ -316,59 +296,29 @@ async function boot() {
   $('#visitHours').textContent = s.hours_en || '';
   $('#year').textContent = new Date().getFullYear();
 
-  renderCats();
-  renderRail();
-  saveFavs();
-  saveCart();
-  updateArrows();
+  paintCounts();
+  renderGallery();
 
-  $('#searchBox').addEventListener('input', (e) => { state.search = e.target.value; renderRail(); });
-  $('#cartBtn').addEventListener('click', openCart);
   $('#favBtn').addEventListener('click', () => {
     if (!state.favs.size) { toast('Tap the heart on any piece to save it here'); return; }
     state.favOnly = true;
-    saveFavs();
-    renderRail();
-    $('#lookbook').scrollIntoView({ behavior: 'smooth' });
+    paintCounts();
+    renderGallery();
+    $('#collection').scrollIntoView({ behavior: 'smooth' });
   });
   $('#favChip').addEventListener('click', () => {
     state.favOnly = !state.favOnly;
-    saveFavs();
-    renderRail();
+    paintCounts();
+    renderGallery();
   });
-  $$('[data-closeqv]').forEach((el) => el.addEventListener('click', closeQv));
+  $('#cartBtn').addEventListener('click', openCart);
+  $('#dockCart').addEventListener('click', openCart);
+  $('#dockFav').addEventListener('click', () => $('#favBtn').click());
   $$('[data-closecart]').forEach((el) => el.addEventListener('click', closeCart));
-  $('#qvAdd').addEventListener('click', () => {
-    if (!state.current || isOut(state.current)) return;
-    const same = state.cart.find((it) => it.id === state.current.id && it.size === state.currentSize);
-    if (same) {
-      closeQv();
-      openCart();
-      toast('Already in your bag, same size');
-      return;
-    }
-    state.cart.push({ id: state.current.id, size: state.currentSize || 'M' });
-    saveCart();
-    closeQv();
-    openCart();
-  });
-  $('#qvPrev').addEventListener('click', () => qvStep(-1));
-  $('#qvNext').addEventListener('click', () => qvStep(1));
-
-  // rail arrows
-  $('#railPrev').addEventListener('click', () => $('.rail-wrap').scrollBy({ left: -railStep() * 2, behavior: 'smooth' }));
-  $('#railNext').addEventListener('click', () => $('.rail-wrap').scrollBy({ left: railStep() * 2, behavior: 'smooth' }));
-  $('.rail-wrap').addEventListener('scroll', updateArrows, { passive: true });
-  window.addEventListener('resize', updateArrows);
-
-  $('#cartSendWA').addEventListener('click', () => {
-    $('#cartSendWA').href = waLink(orderText());
-  });
-  $('#cartSendTG').addEventListener('click', () => {
-    $('#cartSendTG').href = tgLink(orderText());
-  });
+  $('#cartSendWA').addEventListener('click', () => { $('#cartSendWA').href = waLink(orderText()); });
+  $('#cartSendTG').addEventListener('click', () => { $('#cartSendTG').href = tgLink(orderText()); });
   $('#cartCopy').addEventListener('click', async () => {
-    if (!state.cart.length) { toast('Your bag is empty'); return; }
+    if (!state.cart.length) { toast('Your reserve list is empty'); return; }
     try {
       await navigator.clipboard.writeText(orderText());
       toast('Order copied. Paste it in any chat');
@@ -376,28 +326,11 @@ async function boot() {
       toast('Could not copy. Take a screenshot instead');
     }
   });
-
-  // size guide
   $('#sizeGuideBtn').addEventListener('click', () => $('#sizeGuide').showModal());
   $('#sgClose').addEventListener('click', () => $('#sizeGuide').close());
   $('#sizeGuide').addEventListener('click', (e) => { if (e.target === $('#sizeGuide')) $('#sizeGuide').close(); });
 
-  // floating WhatsApp appears after the hero
-  const float = $('#floatWA');
-  const ioFloat = new IntersectionObserver((entries) => {
-    entries.forEach((en) => float.classList.toggle('show', !en.isIntersecting));
-  }, { threshold: 0.08 });
-  ioFloat.observe($('#top'));
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeQv(); closeCart(); }
-    if ($('#qv').hasAttribute('data-open')) {
-      if (e.key === 'ArrowLeft') qvStep(-1);
-      if (e.key === 'ArrowRight') qvStep(1);
-    }
-  });
-
-  // delivery area pills: one tap fills the note field
+  // area pills
   const pills = $('#areaPills');
   pills.innerHTML = AREAS.map((a) => `<button class="area-pill" type="button">${a}</button>`).join('');
   $$('.area-pill', pills).forEach((btn) => btn.addEventListener('click', () => {
@@ -405,12 +338,18 @@ async function boot() {
     $('#cartNote').focus();
   }));
 
-  // scroll reveal for static sections
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => {
-      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-    });
-  }, { threshold: 0.12 });
-  $$('.reveal').forEach((el) => io.observe(el));
+  // floating WhatsApp after hero
+  const float = $('#floatWA');
+  const ioFloat = new IntersectionObserver((entries) => {
+    entries.forEach((en) => float.classList.toggle('show', !en.isIntersecting));
+  }, { threshold: 0.05 });
+  ioFloat.observe($('#top'));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeCart(); $('#sizeGuide').open && $('#sizeGuide').close(); closeChooser(); }
+  });
+
+  // cheap error net
+  window.addEventListener('unhandledrejection', (e) => console.warn(e.reason));
 }
-boot();
+boot().catch((e) => { window.__err = e.message; console.warn('boot failed:', e.message); });

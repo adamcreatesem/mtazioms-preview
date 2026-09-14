@@ -4,216 +4,148 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MTAZIOMS | Luxury Abayas &amp; Diriya, Addis Ababa</title>
-<meta name="description" content="MTAZIOMS sells luxury abayas, diriya, mukhawir and dresses in Addis Ababa. Browse the lookbook, send your order on WhatsApp or Telegram. Free delivery in Addis. Jemo 1, Sun Moon Star Mall.">
+<meta name="description" content="MTAZIOMS sells luxury abayas, diriya, mukhawir and dresses in Addis Ababa. Reserve on WhatsApp or Telegram. Free delivery in Addis. Jemo 1, Sun Moon Star Mall.">
 <meta property="og:title" content="MTAZIOMS | Where Elegance Meets Luxury">
-<meta property="og:description" content="Luxury abayas & diriya in Addis Ababa. Order by WhatsApp or Telegram. Free delivery in Addis.">
+<meta property="og:description" content="Luxury abayas & diriya in Addis Ababa. Reserve on WhatsApp or Telegram. Free delivery in Addis.">
 <meta property="og:image" content="assets/img/og-image.jpg">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<div class="grain" aria-hidden="true"></div>
-
-<header class="topbar">
-  <div class="wrap topbar-in">
-    <a class="brand" href="#top">
-      <img src="assets/img/logo.jpg" alt="MTAZIOMS logo" class="brand-logo">
-      <span class="brand-name">MTAZIOMS</span>
-    </a>
-    <nav class="topnav">
-      <a href="#lookbook">Lookbook</a>
-      <a href="#visit">Visit</a>
-      <a href="#contact">Contact</a>
-    </nav>
-    <button id="favBtn" class="cart-btn" aria-label="Show saved pieces">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-      <span>Saved</span>
-      <span id="favCount" class="cart-count" hidden>0</span>
+<header class="topbar" id="topbar">
+  <a class="brand" href="#top">
+    <img src="assets/img/logo.jpg" alt="MTAZIOMS logo" class="brand-logo">
+    <span class="brand-name">MTAZIOMS</span>
+  </a>
+  <nav class="topnav">
+    <a href="#collection">Collection</a>
+    <a href="#boutique">Boutique</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="top-actions">
+    <button id="favBtn" class="icon-btn" aria-label="Show saved pieces">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+      <span id="favCount" class="count" hidden>0</span>
     </button>
-    <button id="cartBtn" class="cart-btn" aria-label="Open order bag">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 7h12l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H8.7a1.5 1.5 0 0 1-1.5-1.3L6 7z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
-      <span>Bag</span>
-      <span id="cartCount" class="cart-count" hidden>0</span>
+    <button id="cartBtn" class="icon-btn" aria-label="Open reserve list">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 7h12l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H8.7a1.5 1.5 0 0 1-1.5-1.3L6 7z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+      <span>Reserve</span>
+      <span id="cartCount" class="count" hidden>0</span>
     </button>
   </div>
 </header>
 
-<!-- HERO: editorial split. Type block left, full-height photo right, gold rule anchor. -->
+<!-- HERO: full-bleed storefront, single confident line -->
 <section id="top" class="hero">
-  <div class="hero-type">
-    <p class="hero-eyebrow hero-rise">Addis Ababa · Jemo 1</p>
-    <h1 class="hero-title">
-      <span class="hero-line hero-rise d1">Dress like</span>
-      <span class="hero-line hero-rise d2">it <em>matters.</em></span>
-    </h1>
-    <p class="hero-sub hero-rise d3">Luxury abayas, diriya and mukhawir, hand-picked for the women of Addis. Free delivery in the city.</p>
-    <div class="hero-cta hero-rise d4">
-      <a class="btn btn-gold" href="#lookbook">View the Lookbook</a>
-      <a class="btn btn-quiet" id="heroWhatsApp" href="#" target="_blank" rel="noopener">Order on WhatsApp</a>
+  <div class="hero-media"></div>
+  <div class="hero-veil"></div>
+  <div class="hero-copy">
+    <p class="hero-eyebrow">Addis Ababa &middot; Jemo 1</p>
+    <h1 class="hero-title">The abaya,<br><em>considered.</em></h1>
+    <p class="hero-sub">Luxury abayas, diriya and mukhawir, hand-picked for the women of Addis. See a piece you love? One message and it is yours.</p>
+    <div class="hero-cta">
+      <a class="btn btn-ink" href="#collection">See the collection</a>
+      <a class="btn btn-line" id="heroWhatsApp" href="#" target="_blank" rel="noopener">Message us</a>
     </div>
   </div>
-  <div class="hero-photo" role="img" aria-label="The MTAZIOMS boutique collection">
-    <div class="hero-photo-inner"></div>
-    <p class="hero-photo-cap hero-rise d3">The boutique · Sun Moon Star Mall</p>
+  <p class="hero-cap">Sun Moon Star Mall &middot; 2nd floor</p>
+</section>
+
+<!-- COLLECTION: vertical gallery panels -->
+<section id="collection" class="collection">
+  <div class="coll-head">
+    <p class="sec-eyebrow">Current pieces</p>
+    <div class="coll-head-row">
+      <h2 class="sec-title">The Collection</h2>
+      <button id="favChip" class="chip" hidden>&#9825; Saved</button>
+    </div>
+  </div>
+  <p id="emptyMsg" class="empty" hidden>Nothing here yet. Try clearing the saved filter.</p>
+  <div id="gallery" class="gallery"></div>
+</section>
+
+<!-- SERVICE STRIP -->
+<section class="assure">
+  <div class="assure-in">
+    <div><b>Free delivery</b><span>in Addis Ababa</span></div>
+    <div><b>Replies in minutes</b><span>WhatsApp or Telegram</span></div>
+    <div><b>Length adjusted free</b><span>at the boutique</span></div>
+    <div><button id="sizeGuideBtn" class="assure-link">Size guide</button><span>cm, bust/waist/length</span></div>
   </div>
 </section>
 
-<!-- MANIFESTO: one statement, huge serif. -->
-<section class="manifesto">
-  <div class="wrap">
-    <p class="manifesto-line reveal">Elegance is not loud.<br><em>It is exact.</em></p>
-    <div class="manifesto-meta reveal">
-      <span>Est. in Addis Ababa</span>
-      <span>Hand-picked fabrics</span>
-      <span>One boutique, one standard</span>
-    </div>
+<!-- BOUTIQUE -->
+<section id="boutique" class="boutique">
+  <div class="boutique-photos">
+    <img src="assets/img/store-collection.jpg" alt="Inside the MTAZIOMS boutique" loading="lazy">
+    <img src="assets/img/store-rack.jpg" alt="The collection rack" loading="lazy">
   </div>
-</section>
-
-<!-- LOOKBOOK: horizontal scroll rail of pieces. -->
-<section id="lookbook" class="lookbook">
-  <div class="wrap lookbook-head">
-    <div>
-      <p class="sec-eyebrow">The Collection</p>
-      <h2 class="sec-title">Lookbook</h2>
-    </div>
-    <div class="filters">
-      <div class="filters-row">
-        <div id="catFilters" class="cat-filters"></div>
-        <button id="favChip" class="cat-btn fav-chip" hidden>&#9825; Saved</button>
-      </div>
-      <input id="searchBox" class="search-box" type="search" placeholder="Search a color, a style...">
-    </div>
-  </div>
-  <p id="emptyMsg" class="empty" hidden>Nothing matches that search. Try another color or style.</p>
-  <div class="rail-wrap">
-    <div id="rail" class="rail"></div>
-  </div>
-  <div class="rail-nav wrap">
-    <button class="rail-arrow" id="railPrev" aria-label="Scroll back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg></button>
-    <button class="rail-arrow" id="railNext" aria-label="Scroll forward"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6l6 6-6 6"/></svg></button>
-  </div>
-  <p class="rail-hint wrap">Scroll sideways. Tap a piece to order.</p>
-</section>
-
-<!-- STRIP -->
-<section class="strip">
-  <div class="wrap strip-in">
-    <span>Free delivery in Addis Ababa</span>
-    <span class="strip-dot">·</span>
-    <span>Order in one tap, no account</span>
-    <span class="strip-dot">·</span>
-    <span>Replies in minutes</span>
-    <span class="strip-dot">·</span>
-    <button class="strip-link" id="sizeGuideBtn" type="button">Size guide</button>
-  </div>
-</section>
-
-<!-- VISIT -->
-<section id="visit" class="visit">
-  <div class="wrap visit-in">
-    <div class="visit-photos reveal">
-      <img src="assets/img/store-collection.jpg" alt="Inside the MTAZIOMS store" loading="lazy">
-      <img src="assets/img/store-rack.jpg" alt="The collection rack" loading="lazy">
-    </div>
-    <div class="visit-info reveal">
-      <p class="sec-eyebrow">The Boutique</p>
-      <h2 class="sec-title">Visit us</h2>
-      <p class="visit-line" id="visitAddress"></p>
-      <p class="visit-line" id="visitHours"></p>
-      <a class="btn btn-quiet" id="mapsLink" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
-    </div>
+  <div class="boutique-info">
+    <p class="sec-eyebrow">The boutique</p>
+    <h2 class="sec-title">Come say salam</h2>
+    <p class="boutique-line" id="visitAddress"></p>
+    <p class="boutique-line" id="visitHours"></p>
+    <a class="btn btn-line" id="mapsLink" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
   </div>
 </section>
 
 <footer id="contact" class="footer">
-  <div class="wrap footer-in">
-    <img src="assets/img/logo.jpg" alt="" class="footer-logo">
-    <p class="footer-name">MTAZIOMS</p>
-    <p class="footer-tag">Where Elegance Meets Luxury</p>
-    <div class="footer-links">
-      <a id="fWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a>
-      <a id="fTelegram" href="#" target="_blank" rel="noopener">Telegram</a>
-      <a id="fInstagram" href="#" target="_blank" rel="noopener">Instagram</a>
-      <a id="fTikTok" href="#" target="_blank" rel="noopener">TikTok</a>
-      <a id="fPhone" href="#">Call</a>
-    </div>
-    <p class="footer-copy">&copy; <span id="year"></span> MTAZIOMS ABAYAS, Addis Ababa</p>
+  <img src="assets/img/logo.jpg" alt="" class="footer-logo">
+  <p class="footer-name">MTAZIOMS</p>
+  <p class="footer-tag">Where Elegance Meets Luxury</p>
+  <div class="footer-links">
+    <a id="fWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <a id="fTelegram" href="#" target="_blank" rel="noopener">Telegram</a>
+    <a id="fInstagram" href="#" target="_blank" rel="noopener">Instagram</a>
+    <a id="fTikTok" href="#" target="_blank" rel="noopener">TikTok</a>
+    <a id="fPhone" href="#">Call</a>
   </div>
+  <p class="footer-copy">&copy; <span id="year"></span> MTAZIOMS ABAYAS, Addis Ababa</p>
 </footer>
 
-<!-- QUICK VIEW: right flyout panel. -->
-<div id="qv" class="qv">
-  <div class="qv-backdrop" data-closeqv></div>
-  <aside class="qv-panel" role="dialog" aria-modal="true" aria-label="Product quick view">
-    <button class="qv-close" data-closeqv aria-label="Close">&#10005;</button>
-    <div class="qv-media">
-      <img id="qvImg" src="" alt="">
-      <button class="qv-nav prev" id="qvPrev" aria-label="Previous piece"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg></button>
-      <button class="qv-nav next" id="qvNext" aria-label="Next piece"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6l6 6-6 6"/></svg></button>
+<!-- RESERVE LIST (bag sheet) -->
+<div id="cart" class="sheet">
+  <div class="sheet-backdrop" data-closecart></div>
+  <div class="sheet-panel">
+    <div class="sheet-head">
+      <h3>Your reserve list</h3>
+      <button class="x-btn" data-closecart aria-label="Close">&#10005;</button>
     </div>
-    <div class="qv-info">
-      <p class="qv-cat" id="qvCat"></p>
-      <h3 class="qv-name" id="qvName"></h3>
-      <p class="qv-color" id="qvColor"></p>
-      <p class="qv-desc" id="qvDesc"></p>
-      <p class="qv-price" id="qvPrice"></p>
-      <span class="qv-stock" id="qvStockBadge" hidden>Sold out</span>
-      <div class="qv-sizes" id="qvSizes"></div>
-      <div class="qv-actions">
-        <button id="qvAdd" class="btn btn-gold">Add to Bag</button>
-        <a id="qvDirect" class="btn btn-quiet" href="#" target="_blank" rel="noopener">Ask about this piece</a>
-      </div>
-      <p class="qv-note">Confirming stock takes one message. We reply fast.</p>
-    </div>
-  </aside>
-</div>
-
-<!-- BAG drawer. -->
-<div id="cart" class="cart">
-  <div class="cart-backdrop" data-closecart></div>
-  <div class="cart-panel">
-    <div class="cart-head">
-      <h3>Your Bag</h3>
-      <button class="qv-close" data-closecart aria-label="Close">&#10005;</button>
-    </div>
-    <div id="cartItems" class="cart-items"></div>
-    <p id="cartEmpty" class="cart-empty">Your bag is empty. Tap a piece you love and add it.</p>
-    <div class="cart-form">
+    <div id="cartItems" class="sheet-items"></div>
+    <p id="cartEmpty" class="sheet-empty">Nothing reserved yet. Tap a piece you love, choose a size, and it lands here.</p>
+    <div class="sheet-form">
       <p class="form-eyebrow">Delivery details</p>
       <div class="order-summary" id="orderSummary" hidden>
         <span class="os-count" id="osCount"></span>
         <span class="os-total" id="osTotal"></span>
       </div>
       <div class="field">
-        <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
         <label class="field-label" for="cartName">Your name</label>
-        <input id="cartName" class="cart-input" placeholder="Your name" autocomplete="name">
+        <input id="cartName" class="field-input" placeholder="Your name" autocomplete="name">
       </div>
       <div class="field">
-        <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
         <label class="field-label" for="cartNote">Delivery area / notes</label>
-        <input id="cartNote" class="cart-input" placeholder="Delivery area / notes">
+        <input id="cartNote" class="field-input" placeholder="Delivery area / notes">
       </div>
       <p class="field-hint">Popular:</p>
       <div class="area-pills" id="areaPills"></div>
-      <div class="cart-foot">
-        <a id="cartSendWA" class="btn btn-gold" href="#" target="_blank" rel="noopener"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4 0-.5.1-.7l.4-.5c.1-.2.2-.3.3-.5v-.5L9.3 7.7c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.9.9-1.1 2-0.8 3.1.4 1.5 1.4 2.9 2.6 4 1.5 1.4 3.3 2.2 4.9 2.2.9 0 1.8-.4 2.4-1 .3-.4.5-.9.4-1.4 0-.2-.2-.3-.4-.4z"/></svg><span>Send Order on WhatsApp</span></a>
-        <a id="cartSendTG" class="btn btn-quiet" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.6c.2-1-.7-1.5-1.6-1.2L2.7 10.2c-1 .4-1 1.5-.1 1.8l4.5 1.4 1.7 5.3c.3.8 1.1.9 1.6.4l2.4-2.3 4.6 3.4c.8.5 1.8.2 2-.9l2.5-14.7zM8.6 13.1l9.7-6.2c.4-.3.8.2.5.5l-8 7.4-.3 3.3-1.9-5z"/></svg><span>Send on Telegram</span></a>
+      <div class="sheet-actions">
+        <a id="cartSendWA" class="btn btn-wa" href="#" target="_blank" rel="noopener"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4 0-.5.1-.7l.4-.5c.1-.2.2-.3.3-.5v-.5L9.3 7.7c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.9.9-1.1 2-.8 3.1.4 1.5 1.4 2.9 2.6 4 1.5 1.4 3.3 2.2 4.9 2.2.9 0 1.8-.4 2.4-1 .3-.4.5-.9.4-1.4 0-.2-.2-.3-.4-.4z"/></svg><span>Send on WhatsApp</span></a>
+        <a id="cartSendTG" class="btn btn-line" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.6c.2-1-.7-1.5-1.6-1.2L2.7 10.2c-1 .4-1 1.5-.1 1.8l4.5 1.4 1.7 5.3c.3.8 1.1.9 1.6.4l2.4-2.3 4.6 3.4c.8.5 1.8.2 2-.9l2.5-14.7zM8.6 13.1l9.7-6.2c.4-.3.8.2.5.5l-8 7.4-.3 3.3-1.9-5z"/></svg><span>Send on Telegram</span></a>
         <button id="cartCopy" class="copy-order" type="button">Copy order text instead</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- size guide -->
+<!-- SIZE GUIDE -->
 <dialog id="sizeGuide" class="size-guide">
-  <button class="qv-close" id="sgClose" aria-label="Close">&#10005;</button>
+  <button class="x-btn" id="sgClose" aria-label="Close">&#10005;</button>
   <p class="sec-eyebrow">Fit</p>
   <h3 class="sg-title">Size guide</h3>
   <table class="sg-table">
@@ -226,13 +158,24 @@
       <tr><td>XXL</td><td>110-116</td><td>92-97</td><td>143</td></tr>
     </tbody>
   </table>
-  <p class="sg-note">Measurements in centimeters. Between sizes? Take the bigger one, or send us your measurements on WhatsApp and we will advise. Length can be adjusted free of charge at the boutique.</p>
+  <p class="sg-note">Measurements in centimeters. Between sizes? Take the bigger one, or send us your measurements on WhatsApp and we will advise. Length is adjusted free of charge at the boutique.</p>
 </dialog>
 
-<!-- floating WhatsApp -->
+<!-- FLOATING WHATSAPP -->
 <a id="floatWA" class="wa-float" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4 0-.5.1-.7l.4-.5c.1-.2.2-.3.3-.5v-.5L9.3 7.7c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.9.9-1.1 2-.8 3.1.4 1.5 1.4 2.9 2.6 4 1.5 1.4 3.3 2.2 4.9 2.2.9 0 1.8-.4 2.4-1 .3-.4.5-.9.4-1.4 0-.2-.2-.3-.4-.4z"/></svg>
 </a>
+
+<!-- MOBILE DOCK -->
+<div class="dock" id="dock">
+  <button id="dockFav" class="dock-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+    Saved<span id="dockFavN" class="dock-n" hidden>0</span>
+  </button>
+  <button id="dockCart" class="dock-btn dock-main">
+    Reserve<span id="dockCartN" class="dock-n" hidden>0</span>
+  </button>
+</div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
