@@ -1,108 +1,53 @@
-/* MTAZIOMS catalog. Vanilla JS, no dependencies. */
+/* MTAZIOMS app. Vanilla JS, no dependencies. Data contract: data/products.json (admin tool writes it). */
 'use strict';
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
 const state = {
-  lang: localStorage.getItem('mtz_lang') || 'en',
   products: [],
   settings: {},
   categories: [],
   filterCat: 'all',
   search: '',
+  favOnly: false,
   cart: JSON.parse(localStorage.getItem('mtz_cart') || '[]'), // [{id, size}]
+  favs: new Set(JSON.parse(localStorage.getItem('mtz_favs') || '[]')),
   current: null,
   currentSize: null,
+  gridAnimated: false,
 };
 
-/* ---------- i18n strings ---------- */
-const I18N = {
-  en: {
-    nav_collection: 'Collection', nav_visit: 'Visit Us', nav_contact: 'Contact',
-    hero_eyebrow: 'Addis Ababa · Jemo 1 · Sun Moon Star Mall',
-    hero_tag: 'Where Elegance Meets Luxury',
-    hero_sub: 'Luxury abayas, diriya & mukhawir, hand-picked in Addis Ababa. Free delivery in the city.',
-    hero_browse: 'Browse the Collection', hero_order: 'Order on WhatsApp',
-    collection_title: 'The Collection',
-    collection_sub: 'Tap any piece to view, choose your size, and send your order in one tap.',
-    search_ph: 'Search colors, styles…',
-    empty: 'Nothing matches that search. Try another color or style.',
-    strip_delivery: 'Free delivery in Addis Ababa',
-    strip_premium: 'Hand-picked premium fabrics',
-    strip_order: 'Order in one tap, no account needed',
-    visit_title: 'Visit the Boutique',
-    visit_maps: 'Open in Google Maps',
-    footer_tag: 'Where Elegance Meets Luxury',
-    m_add: 'Add to Order', m_direct: 'Ask about this piece',
-    m_note: 'Confirming stock takes one message. We reply fast.',
-    cart_title: 'Your Order',
-    form_title: 'Delivery details',
-    cart_name_label: 'Your name',
-    cart_note_label: 'Delivery area / notes',
-    area_hint: 'Popular:',
-    os_pieces: (n) => `${n} ${n === 1 ? 'piece' : 'pieces'}`,
-    os_total: 'Known total',
-    trust_reply: 'Replies in minutes',
-    trust_delivery: 'Free delivery in Addis',
-    cart_empty: 'Your order list is empty. Tap a piece you love and add it.',
-    cart_name_ph: 'Your name',
-    cart_note_ph: 'Delivery area / notes',
-    cart_send_wa: 'Send Order on WhatsApp',
-    cart_send_tg: 'Send on Telegram',
-    price_fmt: (p) => `${p.toLocaleString()} birr`,
-    inquired: 'Price on request',
-    new_badge: 'New arrival',
-    featured_badge: 'Featured',
-    sizes_label: 'Size',
-  },
-  am: {
-    nav_collection: 'ስብስብ', nav_visit: 'ይጎብኙን', nav_contact: 'አግኙን',
-    hero_eyebrow: 'አዲስ አበባ · ጀሞ 1 · ሳን ሙን ስታር ሞል',
-    hero_tag: 'ቀሰምን ገፅነትን አንድ ላይ',
-    hero_sub: 'የፕሪሚየም አባያ፣ ድሪያ እና ሙካወር፣ በአዲስ አበባ ተመርጦ የቀረበ። ከተማ ውስጥ ነጻ ማድረስ።',
-    hero_browse: 'ስብስቡን ይመልከቱ', hero_order: 'በዋትስአፕ ይዘዙ',
-    collection_title: 'ስብስብ',
-    collection_sub: 'የሚወዱትን በጫኑ፣ መጠንዎን ይምረጡ፣ ትዕዛዝዎን በአንድ ጫን ይላኩ።',
-    search_ph: 'ቀለም፣ ዓይነት ይፈልጉ…',
-    empty: 'ከፍለጋዎ ጋር የሚመሳሰል አልተገኘም። ሌላ ይሞክሩ።',
-    strip_delivery: 'በአዲስ አበባ ነጻ ማድረስ',
-    strip_premium: 'በእጅ የተመረጡ የተለዩ ጨርቆች',
-    strip_order: 'በአንድ ጫን ይዘዙ፣ መመዝገብ አያስፈልግም',
-    visit_title: 'ቢንግተናችንን ይጎብኙን',
-    visit_maps: 'በGoogle Maps ክፈት',
-    footer_tag: 'ቀሰምን ገፅነትን አንድ ላይ',
-    m_add: 'ወደ ትዕዛዝ ጨምር', m_direct: 'ስለ እንደዚህ ጠይቅ',
-    m_note: 'ያለበትን ለማረጋገጥ አንድ መልእክት ብቻ ይሰፍናል። በፍጥነት እንመልሳለን።',
-    cart_title: 'ትዕዛዝዎ',
-    form_title: 'የማድረስ ዝርዝር',
-    cart_name_label: 'ስምዎ',
-    cart_note_label: 'የማድረስ ቦታ / ማስታወሻ',
-    area_hint: 'ተወዳጅ:',
-    os_pieces: (n) => `${n} ቁርጥራጮች`,
-    os_total: 'የሚታወቅ ጠቅላላ',
-    trust_reply: 'በደቂቃዎች ውስጥ እንመልሳለን',
-    trust_delivery: 'በአዲስ አበባ ነጻ ማድረስ',
-    cart_empty: 'ትዕዛዝዎ ባዶ ነው። የሚወዱትን በጫኑ ይጨምሩ።',
-    cart_name_ph: 'ስምዎ',
-    cart_note_ph: 'የማድረስ ቦታ / ማስታወሻ',
-    cart_send_wa: 'በዋትስአፕ ላክ',
-    cart_send_tg: 'በቴሌግራም ላክ',
-    price_fmt: (p) => `${p.toLocaleString()} ብር`,
-    inquired: 'ዋጋውን ይጠይቁ',
-    new_badge: 'አዲስ',
-    featured_badge: 'ተመራጭ',
-    sizes_label: 'መጠን',
-  },
-};
-const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || I18N.en[k] || k;
+const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+const AREAS = ['Jemo 1', 'Bole', 'Megenagna', 'Ayat', 'Sarbet', 'Piassa'];
 
-/* ---------- helpers ---------- */
-const L = (o, key) => o[`${key}_${state.lang}`] || o[`${key}_en`] || '';
 const waLink = (text) => `https://wa.me/${state.settings.whatsapp}?text=${encodeURIComponent(text)}`;
 const tgLink = (text) => `https://t.me/${state.settings.telegram}?text=${encodeURIComponent(text)}`;
-const money = (p) => (p == null ? t('inquired') : t('price_fmt')(p));
+const money = (p) => (p == null ? 'Price on request' : `${p.toLocaleString()} birr`);
+const catName = (id) => (state.categories.find((c) => c.id === id) || {}).en || id;
+const isOut = (p) => p.stock === false || p.stock === 'sold-out';
 
+/* ---------- toast ---------- */
+let toastTimer = null;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+/* ---------- favorites ---------- */
+function saveFavs() {
+  localStorage.setItem('mtz_favs', JSON.stringify([...state.favs]));
+  const n = state.favs.size;
+  const badge = $('#favCount');
+  badge.hidden = n === 0;
+  badge.textContent = n;
+  $('#favChip').hidden = n === 0;
+  $('#favChip').innerHTML = n === 0 ? '&#9825; Saved' : `${state.favOnly ? '&#9829;' : '&#9825;'} Saved (${n})`;
+  $('#favChip').classList.toggle('active', state.favOnly);
+}
 function saveCart() {
   localStorage.setItem('mtz_cart', JSON.stringify(state.cart));
   const n = state.cart.length;
@@ -117,146 +62,219 @@ function saveCart() {
   }
 }
 
-/* ---------- i18n paint ---------- */
-function applyLang() {
-  document.documentElement.lang = state.lang;
-  $$('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
-  $$('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
-  $('#langToggle').textContent = state.lang === 'en' ? 'አማርኛ' : 'English';
-  $('#visitAddress').textContent = L(state.settings, 'address');
-  $('#visitHours').textContent = L(state.settings, 'hours');
-  renderGrid();
-  renderCart();
+function toggleFav(id) {
+  if (state.favs.has(id)) {
+    state.favs.delete(id);
+    toast('Removed from saved pieces');
+  } else {
+    state.favs.add(id);
+    toast('Saved. Find it under Saved anytime');
+  }
+  saveFavs();
+  renderRail();
 }
 
-/* ---------- grid ---------- */
-function badge(p) {
-  if (p.featured) return `<span class="card-badge">${t('featured_badge')}</span>`;
-  return '';
-}
-function renderGrid() {
+/* ---------- lookbook rail ---------- */
+function filtered() {
   const q = state.search.trim().toLowerCase();
-  const list = state.products.filter((p) => {
+  return state.products.filter((p) => {
     if (state.filterCat !== 'all' && p.category !== state.filterCat) return false;
+    if (state.favOnly && !state.favs.has(p.id)) return false;
     if (!q) return true;
-    return [p.name_en, p.name_am, p.color_en, p.color_am, p.desc_en, p.category]
-      .join(' ').toLowerCase().includes(q);
+    return [p.name_en, p.color_en, p.desc_en, p.category].join(' ').toLowerCase().includes(q);
   });
-  const grid = $('#grid');
-  grid.innerHTML = list.map((p) => `
-    <article class="card" data-id="${p.id}">
-      <div class="card-media">
-        <img src="${p.img}" alt="${p.name_en}" loading="lazy">
-        ${badge(p)}
+}
+
+function renderRail() {
+  const list = filtered();
+  const rail = $('#rail');
+  rail.innerHTML = list.map((p) => {
+    const out = isOut(p);
+    const faved = state.favs.has(p.id);
+    return `
+    <article class="piece ${out ? 'out' : ''}" data-id="${p.id}">
+      <div class="piece-media">
+        <img src="${p.img}" alt="${p.name_en}" loading="lazy" draggable="false">
+        ${p.featured ? '<span class="piece-badge">Featured</span>' : ''}
+        ${out ? '<span class="soldout">Sold out</span>' : ''}
+        <button class="fav-btn ${faved ? 'on' : ''}" data-fav="${p.id}" aria-label="${faved ? 'Remove from' : 'Save to'} saved pieces" aria-pressed="${faved}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </button>
       </div>
-      <div class="card-body">
-        <h3 class="card-name">${L(p, 'name')}</h3>
-        <p class="card-color">${L(p, 'color')}</p>
-        <p class="card-price ${p.price == null ? 'inq' : ''}">${money(p.price)}</p>
+      <div class="piece-info">
+        <h3 class="piece-name">${p.name_en}</h3>
+        <p class="piece-price ${p.price == null ? 'inq' : ''}">${money(p.price)}</p>
       </div>
-    </article>`).join('');
+    </article>`;
+  }).join('');
   $('#emptyMsg').hidden = list.length > 0;
-  $$('.card', grid).forEach((el) =>
-    el.addEventListener('click', () => openModal(el.dataset.id)));
-  // entrance stagger on first paint only; filters/search re-render without re-animating (no flicker)
+  $$('.piece', rail).forEach((el) => el.addEventListener('click', () => openQv(el.dataset.id)));
+  $$('[data-fav]', rail).forEach((el) => el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleFav(el.dataset.fav);
+  }));
   if (!state.gridAnimated) {
     state.gridAnimated = true;
-    $$('.card', grid).forEach((el, i) => {
-      el.style.transitionDelay = `${Math.min(i * 60, 420)}ms`;
+    $$('.piece', rail).forEach((el, i) => {
+      el.style.transitionDelay = `${Math.min(i * 70, 490)}ms`;
       requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
       el.addEventListener('transitionend', () => { el.style.transitionDelay = ''; }, { once: true });
     });
   } else {
-    $$('.card', grid).forEach((el) => el.classList.add('in'));
+    $$('.piece', rail).forEach((el) => el.classList.add('in'));
   }
 }
 
 function renderCats() {
   const wrap = $('#catFilters');
-  const cats = [{ id: 'all', en: 'All', am: 'ሁሉም' }, ...state.categories];
+  const cats = [{ id: 'all', en: 'All' }, ...state.categories];
   wrap.innerHTML = cats.map((c) => `
-    <button class="cat-btn ${c.id === state.filterCat ? 'active' : ''}" data-cat="${c.id}">${L(c, '') ? L(c, '') : (c.en)}</button>`).join('');
+    <button class="cat-btn ${c.id === state.filterCat ? 'active' : ''}" data-cat="${c.id}">${c.en}</button>`).join('');
   $$('.cat-btn', wrap).forEach((b) => b.addEventListener('click', () => {
     state.filterCat = b.dataset.cat;
     renderCats();
-    renderGrid();
+    renderRail();
   }));
 }
 
-/* ---------- modal ---------- */
-const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
-function openModal(id) {
-  // (modal open/close now driven by [data-open] for symmetric exit transitions)
-  const p = state.products.find((x) => x.id === id);
-  if (!p) return;
+/* ---------- rail arrows ---------- */
+function railStep() {
+  const piece = $('.piece');
+  return piece ? piece.getBoundingClientRect().width + 22 : 294;
+}
+function updateArrows() {
+  const wrap = $('.rail-wrap');
+  const max = wrap.scrollWidth - wrap.clientWidth;
+  $('#railPrev').disabled = wrap.scrollLeft <= 4;
+  $('#railNext').disabled = wrap.scrollLeft >= max - 4;
+}
+
+/* ---------- quick view flyout ---------- */
+function fillQv(p) {
   state.current = p;
-  state.currentSize = null;
-  $('#mImg').src = p.img;
-  $('#mImg').alt = p.name_en;
-  $('#mCat').textContent = (state.categories.find((c) => c.id === p.category) || {}).en || '';
-  $('#mName').textContent = L(p, 'name');
-  $('#mColor').textContent = L(p, 'color');
-  $('#mDesc').textContent = L(p, 'desc');
-  const priceEl = $('#mPrice');
-  priceEl.textContent = money(p.price);
-  priceEl.classList.toggle('inq', p.price == null);
-  const sz = $('#mSizes');
-  sz.innerHTML = SIZES.map((s, i) =>
-    `<button class="size-btn ${i === 1 ? 'active' : ''}" data-size="${s}">${s}</button>`).join('');
   state.currentSize = 'M';
+  $('#qvImg').src = p.img;
+  $('#qvImg').alt = p.name_en;
+  $('#qvCat').textContent = catName(p.category);
+  $('#qvName').textContent = p.name_en;
+  $('#qvColor').textContent = p.color_en;
+  $('#qvDesc').textContent = p.desc_en || '';
+  const priceEl = $('#qvPrice');
+  priceEl.textContent = isOut(p) ? 'Currently sold out' : money(p.price);
+  priceEl.classList.toggle('inq', p.price == null || isOut(p));
+  const out = isOut(p);
+  $('#qvStockBadge').hidden = !out;
+  const add = $('#qvAdd');
+  add.disabled = out;
+  add.textContent = out ? 'Sold out' : 'Add to Bag';
+  $('#qvDirect').textContent = out ? 'Ask when it is back' : 'Ask about this piece';
+  $('#qvDirect').href = waLink(out
+    ? `Hello MTAZIOMS! When is "${p.name_en}" (${p.color_en}) back in stock?`
+    : `Hello MTAZIOMS! Is "${p.name_en}" (${p.color_en}) available?`);
+  const sz = $('#qvSizes');
+  sz.innerHTML = SIZES.map((s) => `<button class="size-btn ${s === 'M' ? 'active' : ''}" data-size="${s}">${s}</button>`).join('');
   $$('.size-btn', sz).forEach((b) => b.addEventListener('click', () => {
     state.currentSize = b.dataset.size;
     $$('.size-btn', sz).forEach((x) => x.classList.toggle('active', x === b));
   }));
-  $('#mDirect').href = waLink(`Hello MTAZIOMS! Is "${p.name_en}" (${L(p, 'color')}) available?`);
-  $('#modal').setAttribute('data-open', '');
-  document.body.style.overflow = 'hidden';
-}
-/* ---------- overlay open/close (data-open driven) ---------- */
-function closeModal() {
-  $('#modal').removeAttribute('data-open');
-  document.body.style.overflow = '';
 }
 
-/* ---------- cart ---------- */
+function openQv(id) {
+  const p = state.products.find((x) => x.id === id);
+  if (!p) return;
+  fillQv(p);
+  $('#qv').setAttribute('data-open', '');
+  document.body.style.overflow = 'hidden';
+}
+function closeQv() {
+  $('#qv').removeAttribute('data-open');
+  document.body.style.overflow = '';
+}
+function qvStep(dir) {
+  const list = filtered();
+  if (!list.length) return;
+  const idx = list.findIndex((x) => x.id === state.current.id);
+  const next = list[(idx + dir + list.length) % list.length];
+  fillQv(next);
+}
+
+/* ---------- bag ---------- */
 function renderCart() {
   const box = $('#cartItems');
-  box.innerHTML = state.cart.map((item, idx) => {
-    const p = state.products.find((x) => x.id === item.id);
+  const merged = [];
+  state.cart.forEach((item) => {
+    const hit = merged.find((m) => m.id === item.id && m.size === item.size);
+    if (hit) hit.qty += 1;
+    else merged.push({ ...item, qty: 1 });
+  });
+  box.innerHTML = merged.map((m, idx) => {
+    const p = state.products.find((x) => x.id === m.id);
     if (!p) return '';
     return `
       <div class="cart-item">
         <img src="${p.img}" alt="">
         <div>
-          <p class="ci-name">${L(p, 'name')}</p>
-          <p class="ci-meta">${t('sizes_label')}: ${item.size}${p.price != null ? ` · ${money(p.price)}` : ''}</p>
+          <p class="ci-name">${p.name_en}</p>
+          <p class="ci-meta">Size: ${m.size}${p.price != null ? ` · ${money(p.price)}` : ''}</p>
         </div>
-        <button class="ci-rm" data-rm="${idx}" aria-label="Remove">✕</button>
+        <div class="ci-qty">
+          <button class="qty-btn" data-dec="${idx}" aria-label="One less" ${m.qty === 1 ? 'data-dec-line="1"' : ''}>&#8722;</button>
+          <span class="qty-num">${m.qty}</span>
+          <button class="qty-btn" data-inc="${idx}" aria-label="One more">+</button>
+        </div>
+        <button class="ci-rm" data-rm="${idx}" aria-label="Remove">&#10005;</button>
       </div>`;
   }).join('');
-  $('#cartEmpty').hidden = state.cart.length > 0;
+  $('#cartEmpty').hidden = merged.length > 0;
   $$('[data-rm]', box).forEach((b) => b.addEventListener('click', () => {
-    state.cart.splice(+b.dataset.rm, 1);
+    // remove the whole line (all sizes of that piece stay untouched)
+    const m = merged[+b.dataset.rm];
+    state.cart = state.cart.filter((it) => !(it.id === m.id && it.size === m.size));
     saveCart();
     renderCart();
   }));
-  // order summary: count + total of known prices only (never fabricate, Rule 29)
-  const known = state.cart
-    .map((item) => state.products.find((x) => x.id === item.id))
-    .filter((p) => p && p.price != null);
-  const total = known.reduce((sum, p) => sum + p.price, 0);
-  $('#osCount').textContent = t('os_pieces')(state.cart.length);
+  $$('[data-inc]', box).forEach((b) => b.addEventListener('click', () => {
+    const m = merged[+b.dataset.inc];
+    state.cart.push({ id: m.id, size: m.size });
+    saveCart();
+    renderCart();
+  }));
+  $$('[data-dec]', box).forEach((b) => b.addEventListener('click', () => {
+    const m = merged[+b.dataset.dec];
+    if (m.qty === 1) { // minus at 1 removes the line
+      state.cart = state.cart.filter((it) => !(it.id === m.id && it.size === m.size));
+    } else {
+      const rawIdx = state.cart.findIndex((it) => it.id === m.id && it.size === m.size);
+      state.cart.splice(rawIdx, 1);
+    }
+    saveCart();
+    renderCart();
+  }));
+  const count = state.cart.length;
+  const known = merged
+    .map((m) => ({ m, p: state.products.find((x) => x.id === m.id) }))
+    .filter((x) => x.p && x.p.price != null);
+  const total = known.reduce((sum, x) => sum + x.p.price * x.m.qty, 0);
+  $('#osCount').textContent = `${count} ${count === 1 ? 'piece' : 'pieces'}`;
   $('#osTotal').innerHTML = known.length
-    ? `${total.toLocaleString()}<span class="os-known">${t('os_total')}</span>`
+    ? `${total.toLocaleString()}<span class="os-known">Known total</span>`
     : '';
-  $('#orderSummary').hidden = state.cart.length === 0;
+  $('#orderSummary').hidden = count === 0;
 }
+
 function orderText() {
   const name = $('#cartName').value.trim();
   const note = $('#cartNote').value.trim();
-  const lines = state.cart.map((item, i) => {
-    const p = state.products.find((x) => x.id === item.id);
-    return `${i + 1}. ${p ? p.name_en : item.id}, Size ${item.size}${p && p.price != null ? `, ${money(p.price)}` : ''}`;
+  const merged = [];
+  state.cart.forEach((item) => {
+    const hit = merged.find((m) => m.id === item.id && m.size === item.size);
+    if (hit) hit.qty += 1;
+    else merged.push({ ...item, qty: 1 });
+  });
+  const lines = merged.map((m, i) => {
+    const p = state.products.find((x) => x.id === m.id);
+    const qty = m.qty > 1 ? ` x${m.qty}` : '';
+    return `${i + 1}. ${p ? p.name_en : m.id}, Size ${m.size}${qty}${p && p.price != null ? `, ${money(p.price)}` : ''}`;
   });
   return [
     `Hello MTAZIOMS! I would like to order:`,
@@ -267,6 +285,7 @@ function orderText() {
     name ? `From: ${name}` : '',
   ].filter(Boolean).join('\n');
 }
+
 function openCart() {
   renderCart();
   $('#cart').setAttribute('data-open', '');
@@ -286,50 +305,99 @@ async function boot() {
 
   const s = state.settings;
   $('#heroWhatsApp').href = waLink('Hello MTAZIOMS! I saw your website and I have a question.');
+  $('#floatWA').href = waLink('Hello MTAZIOMS!');
   $('#fWhatsApp').href = waLink('Hello MTAZIOMS!');
   $('#fTelegram').href = `https://t.me/${s.telegram}`;
   $('#fInstagram').href = `https://www.instagram.com/${s.instagram}`;
   $('#fTikTok').href = `https://www.tiktok.com/@${s.tiktok}`;
   $('#fPhone').href = `tel:${s.phone_primary}`;
   $('#mapsLink').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.maps_query)}`;
+  $('#visitAddress').textContent = s.address_en || '';
+  $('#visitHours').textContent = s.hours_en || '';
   $('#year').textContent = new Date().getFullYear();
 
   renderCats();
-  applyLang();
+  renderRail();
+  saveFavs();
   saveCart();
+  updateArrows();
 
-  $('#langToggle').addEventListener('click', () => {
-    state.lang = state.lang === 'en' ? 'am' : 'en';
-    localStorage.setItem('mtz_lang', state.lang);
-    applyLang();
-  });
-  $('#searchBox').addEventListener('input', (e) => { state.search = e.target.value; renderGrid(); });
+  $('#searchBox').addEventListener('input', (e) => { state.search = e.target.value; renderRail(); });
   $('#cartBtn').addEventListener('click', openCart);
-  $$('[data-close]').forEach((el) => el.addEventListener('click', closeModal));
+  $('#favBtn').addEventListener('click', () => {
+    if (!state.favs.size) { toast('Tap the heart on any piece to save it here'); return; }
+    state.favOnly = true;
+    saveFavs();
+    renderRail();
+    $('#lookbook').scrollIntoView({ behavior: 'smooth' });
+  });
+  $('#favChip').addEventListener('click', () => {
+    state.favOnly = !state.favOnly;
+    saveFavs();
+    renderRail();
+  });
+  $$('[data-closeqv]').forEach((el) => el.addEventListener('click', closeQv));
   $$('[data-closecart]').forEach((el) => el.addEventListener('click', closeCart));
-  $('#mAdd').addEventListener('click', () => {
-    if (!state.current) return;
+  $('#qvAdd').addEventListener('click', () => {
+    if (!state.current || isOut(state.current)) return;
+    const same = state.cart.find((it) => it.id === state.current.id && it.size === state.currentSize);
+    if (same) {
+      closeQv();
+      openCart();
+      toast('Already in your bag, same size');
+      return;
+    }
     state.cart.push({ id: state.current.id, size: state.currentSize || 'M' });
     saveCart();
-    closeModal();
+    closeQv();
     openCart();
   });
+  $('#qvPrev').addEventListener('click', () => qvStep(-1));
+  $('#qvNext').addEventListener('click', () => qvStep(1));
+
+  // rail arrows
+  $('#railPrev').addEventListener('click', () => $('.rail-wrap').scrollBy({ left: -railStep() * 2, behavior: 'smooth' }));
+  $('#railNext').addEventListener('click', () => $('.rail-wrap').scrollBy({ left: railStep() * 2, behavior: 'smooth' }));
+  $('.rail-wrap').addEventListener('scroll', updateArrows, { passive: true });
+  window.addEventListener('resize', updateArrows);
+
   $('#cartSendWA').addEventListener('click', () => {
     $('#cartSendWA').href = waLink(orderText());
   });
   $('#cartSendTG').addEventListener('click', () => {
     $('#cartSendTG').href = tgLink(orderText());
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeModal(); closeCart(); }
+  $('#cartCopy').addEventListener('click', async () => {
+    if (!state.cart.length) { toast('Your bag is empty'); return; }
+    try {
+      await navigator.clipboard.writeText(orderText());
+      toast('Order copied. Paste it in any chat');
+    } catch {
+      toast('Could not copy. Take a screenshot instead');
+    }
   });
 
-  // marquee: duplicate the item set once for a seamless -50% loop (clones keep data-i18n)
-  const track = $('#stripTrack');
-  if (track) [...track.children].forEach((child) => track.appendChild(child.cloneNode(true)));
+  // size guide
+  $('#sizeGuideBtn').addEventListener('click', () => $('#sizeGuide').showModal());
+  $('#sgClose').addEventListener('click', () => $('#sizeGuide').close());
+  $('#sizeGuide').addEventListener('click', (e) => { if (e.target === $('#sizeGuide')) $('#sizeGuide').close(); });
 
-  // popular delivery areas: one tap fills the note field
-  const AREAS = ['Jemo 1', 'Bole', 'Megenagna', 'Ayat', 'Sarbet', 'Piassa'];
+  // floating WhatsApp appears after the hero
+  const float = $('#floatWA');
+  const ioFloat = new IntersectionObserver((entries) => {
+    entries.forEach((en) => float.classList.toggle('show', !en.isIntersecting));
+  }, { threshold: 0.08 });
+  ioFloat.observe($('#top'));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeQv(); closeCart(); }
+    if ($('#qv').hasAttribute('data-open')) {
+      if (e.key === 'ArrowLeft') qvStep(-1);
+      if (e.key === 'ArrowRight') qvStep(1);
+    }
+  });
+
+  // delivery area pills: one tap fills the note field
   const pills = $('#areaPills');
   pills.innerHTML = AREAS.map((a) => `<button class="area-pill" type="button">${a}</button>`).join('');
   $$('.area-pill', pills).forEach((btn) => btn.addEventListener('click', () => {
@@ -337,7 +405,7 @@ async function boot() {
     $('#cartNote').focus();
   }));
 
-  // section reveal on scroll (static elements only; cards stagger in renderGrid)
+  // scroll reveal for static sections
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
