@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTAZIOMS — Product Manager</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --black:#0b0a08; --panel:#1c1913; --gold:#c9a227; --ivory:#f6f1e5; --dim:#b7ae9c; --line:rgba(201,162,39,.25); }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--black); color:var(--ivory); font-family:'Jost',sans-serif; font-weight:300; line-height:1.55; padding:28px 4%; }
+h1 { font-size:1.4rem; letter-spacing:.2em; color:var(--gold); }
+.sub { color:var(--dim); font-size:.88rem; margin:6px 0 26px; max-width:760px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:22px; }
+h2 { font-size:.95rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+label { display:block; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); margin-bottom:5px; }
+input, select, textarea { width:100%; background:#14120e; border:1px solid var(--line); color:var(--ivory); padding:10px 12px; border-radius:8px; font-family:inherit; font-size:.92rem; outline:none; }
+input:focus, select:focus, textarea:focus { border-color:var(--gold); }
+.btn { display:inline-block; background:linear-gradient(135deg,var(--gold),#a8861d); color:#171204; font-weight:600; border:none; padding:12px 26px; border-radius:999px; font-family:inherit; font-size:.82rem; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; }
+.btn.ghost { background:none; border:1px solid var(--line); color:var(--ivory); font-weight:400; }
+.btn:hover { filter:brightness(1.1); }
+.row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:16px; }
+.preview { width:96px; height:128px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }
+.list-item { display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(201,162,39,.12); }
+.list-item img { width:64px; height:84px; object-fit:cover; border-radius:6px; }
+.small { font-size:.78rem; color:var(--dim); }
+.status { font-size:.85rem; color:var(--gold); margin-left:12px; }
+.hint { font-size:.78rem; color:var(--dim); margin-top:8px; }
+@media (max-width:760px){ .grid2,.grid4{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<h1>MTAZIOMS · Product Manager</h1>
+<p class="sub">Add new arrivals with a phone photo — this page compresses the photo and updates the catalog file.
+Hand the exported <b>products.json</b> + <b>photos</b> folder to your webmaster (or send them to Adam) and the new pieces appear on the site.</p>
+
+<div class="card">
+  <h2>1 · Load current catalog</h2>
+  <div class="row" style="margin-top:0">
+    <input type="file" id="loadJson" accept=".json" style="max-width:340px">
+    <span class="small" id="loadStatus">or start fresh below</span>
+  </div>
+  <div id="existList" style="margin-top:14px"></div>
+</div>
+
+<div class="card">
+  <h2>2 · Add a product</h2>
+  <div class="grid2">
+    <div>
+      <label>Photo (phone photo is fine — auto-compressed)</label>
+      <input type="file" id="photo" accept="image/*">
+      <div class="row"><img id="photoPrev" class="preview" hidden alt=""></div>
+    </div>
+    <div class="grid2" style="gap:14px">
+      <div><label>Name (English)</label><input id="nameEn" placeholder="Maroon Royal Abaya"></div>
+      <div><label>ስም (አማርኛ)</label><input id="nameAm" placeholder="የማሩን አባያ"></div>
+      <div><label>Color (English)</label><input id="colorEn" placeholder="Deep maroon"></div>
+      <div><label>ቀለም (አማርኛ)</label><input id="colorAm" placeholder="ጨለማ ቀይ"></div>
+      <div><label>Category</label>
+        <select id="category">
+          <option value="abaya">Abaya</option>
+          <option value="diriya">Diriya</option>
+          <option value="mukhawir">Mukhawir</option>
+          <option value="dresses">Dress</option>
+          <option value="shoes">Shoes</option>
+          <option value="accessory">Accessory</option>
+        </select>
+      </div>
+      <div><label>Price in birr (leave empty = "ask price")</label><input id="price" type="number" min="0" placeholder="15000"></div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div><label>Description (English)</label><textarea id="descEn" rows="2" placeholder="One sentence about the fabric or embroidery."></textarea></div>
+    <div><label>መግለጫ (አማርኛ)</label><textarea id="descAm" rows="2"></textarea></div>
+  </div>
+  <div class="row">
+    <label style="text-transform:none;letter-spacing:0;display:flex;gap:8px;align-items:center">
+      <input type="checkbox" id="featured" style="width:auto"> Featured on the site
+    </label>
+    <button class="btn" id="addBtn">Add to catalog</button>
+    <span class="status" id="addStatus"></span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>3 · Export for the website</h2>
+  <p class="small" id="expCount">Catalog in memory: 0 products.</p>
+  <div class="row">
+    <button class="btn" id="expJson">Download products.json</button>
+    <button class="btn ghost" id="expPhotos">Download photos (one by one)</button>
+  </div>
+  <p class="hint">Send both to Adam (@your Telegram) or to whoever manages the site — files drop straight in.</p>
+</div>
+
+<script>
+'use strict';
+const S = { products: [], photos: {} }; // photos: id -> dataURL
+
+const $ = (s) => document.querySelector(s);
+
+$('#loadJson').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const data = JSON.parse(await f.text());
+  S.products = data.products || [];
+  $('#loadStatus').textContent = `loaded ${S.products.length} products`;
+  renderList();
+  updateCount();
+});
+
+$('#photo').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const dataUrl = await compress(f, 900, 0.82);
+  $('#photoPrev').src = dataUrl;
+  $('#photoPrev').hidden = false;
+  $('#photoPrev').dataset.ready = '1';
+});
+
+function compress(file, maxW, q) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxW / img.width);
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/jpeg', q));
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+$('#addBtn').addEventListener('click', () => {
+  const nameEn = $('#nameEn').value.trim();
+  if (!nameEn) { flash('#addStatus', 'Name (English) is required'); return; }
+  if (!$('#photoPrev').dataset.ready) { flash('#addStatus', 'Choose a photo first'); return; }
+  const id = nameEn.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
+  const priceRaw = $('#price').value.trim();
+  const p = {
+    id,
+    name_en: nameEn,
+    name_am: $('#nameAm').value.trim() || nameEn,
+    category: $('#category').value,
+    color_en: $('#colorEn').value.trim() || '',
+    color_am: $('#colorAm').value.trim() || '',
+    desc_en: $('#descEn').value.trim() || '',
+    desc_am: $('#descAm').value.trim() || '',
+    price: priceRaw === '' ? null : +priceRaw,
+    img: `assets/img/${id}.jpg`,
+    featured: $('#featured').checked,
+    stock: true,
+  };
+  S.products.unshift(p);
+  S.photos[id] = $('#photoPrev').src;
+  // reset form
+  ['#nameEn','#nameAm','#colorEn','#colorAm','#descEn','#descAm','#price'].forEach(s => { $(s).value = ''; });
+  $('#featured').checked = false;
+  $('#photoPrev').hidden = true;
+  delete $('#photoPrev').dataset.ready;
+  $('#photo').value = '';
+  flash('#addStatus', `added "${nameEn}" ✓`);
+  renderList();
+  updateCount();
+});
+
+function renderList() {
+  $('#existList').innerHTML = S.products.map((p) => `
+    <div class="list-item">
+      <img src="${S.photos[p.id] || p.img}" alt="" onerror="this.style.opacity=.25">
+      <div>
+        <b>${p.name_en}</b> <span class="small">· ${p.category} · ${p.price == null ? 'ask price' : p.price + ' birr'}</span><br>
+        <span class="small">${p.name_am || ''}</span>
+      </div>
+      <button class="btn ghost" data-del="${p.id}">Remove</button>
+    </div>`).join('');
+  document.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => {
+    S.products = S.products.filter((p) => p.id !== b.dataset.del);
+    renderList();
+    updateCount();
+  }));
+}
+
+function updateCount() { $('#expCount').textContent = `Catalog in memory: ${S.products.length} products.`; }
+function flash(sel, msg) { $(sel).textContent = msg; setTimeout(() => { $(sel).textContent = ''; }, 3500); }
+
+$('#expJson').addEventListener('click', () => {
+  const out = JSON.stringify({ products: S.products }, null, 2);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([out], { type: 'application/json' }));
+  a.download = 'products.json';
+  a.click();
+});
+
+$('#expPhotos').addEventListener('click', () => {
+  const ids = Object.keys(S.photos);
+  if (!ids.length) { alert('No new photos to export.'); return; }
+  ids.forEach((id, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = S.photos[id];
+      a.download = `${id}.jpg`;
+      a.click();
+    }, i * 400);
+  });
+});
+</script>
+</body>
+</html>

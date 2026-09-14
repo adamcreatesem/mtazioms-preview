@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTAZIOMS | Luxury Abayas &amp; Diriya — Addis Ababa</title>
+<meta name="description" content="MTAZIOMS — luxury abayas, diriya, mukhawir and dresses in Addis Ababa. Browse the collection, send your order on WhatsApp or Telegram. Free delivery in Addis. Jemo 1, Sun Moon Star Mall.">
+<meta property="og:title" content="MTAZIOMS | Where Elegance Meets Luxury">
+<meta property="og:description" content="Luxury abayas & diriya in Addis Ababa. Browse the collection and order by WhatsApp or Telegram. Free delivery in Addis.">
+<meta property="og:image" content="assets/img/og-image.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&family=Noto+Sans+Ethiopic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top">
+      <img src="assets/img/logo.jpg" alt="MTAZIOMS logo" class="brand-logo">
+      <span class="brand-name">MTAZIOMS</span>
+    </a>
+    <nav class="topnav">
+      <a href="#collection" data-i18n="nav_collection">Collection</a>
+      <a href="#visit" data-i18n="nav_visit">Visit Us</a>
+      <a href="#contact" data-i18n="nav_contact">Contact</a>
+    </nav>
+    <div class="topbar-actions">
+      <button id="langToggle" class="lang-toggle" aria-label="Switch language">አማርኛ</button>
+      <button id="cartBtn" class="cart-btn" aria-label="Open order list">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 7h12l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H8.7a1.5 1.5 0 0 1-1.5-1.3L6 7z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+        <span id="cartCount" class="cart-count" hidden>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section id="top" class="hero">
+  <div class="hero-bg" role="presentation"></div>
+  <div class="wrap hero-in">
+    <img src="assets/img/logo.jpg" alt="" class="hero-logo">
+    <h1 class="hero-name">MTAZIOMS</h1>
+    <p class="hero-tag" data-i18n="hero_tag">Where Elegance Meets Luxury</p>
+    <p class="hero-sub" data-i18n="hero_sub">Luxury abayas, diriya &amp; mukhawir — hand-picked in Addis Ababa. Free delivery in the city.</p>
+    <div class="hero-cta">
+      <a class="btn btn-gold" href="#collection" data-i18n="hero_browse">Browse the Collection</a>
+      <a class="btn btn-ghost" id="heroWhatsApp" href="#" target="_blank" rel="noopener" data-i18n="hero_order">Order on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<section id="collection" class="collection">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title" data-i18n="collection_title">The Collection</h2>
+      <p class="sec-sub" data-i18n="collection_sub">Tap any piece to view, choose your size, and send your order in one tap.</p>
+    </div>
+    <div class="filters">
+      <div id="catFilters" class="cat-filters"></div>
+      <input id="searchBox" class="search-box" type="search" data-i18n-ph="search_ph" placeholder="Search colors, styles…">
+    </div>
+    <div id="grid" class="grid"></div>
+    <p id="emptyMsg" class="empty" hidden data-i18n="empty">Nothing matches that search — try another color or style.</p>
+  </div>
+</section>
+
+<section class="strip">
+  <div class="wrap strip-in">
+    <div class="strip-item"><span class="strip-icon">✦</span><span data-i18n="strip_delivery">Free delivery in Addis Ababa</span></div>
+    <div class="strip-item"><span class="strip-icon">✦</span><span data-i18n="strip_premium">Hand-picked premium fabrics</span></div>
+    <div class="strip-item"><span class="strip-icon">✦</span><span data-i18n="strip_order">Order in one tap — no account needed</span></div>
+  </div>
+</section>
+
+<section id="visit" class="visit">
+  <div class="wrap visit-in">
+    <div class="visit-photos">
+      <img src="assets/img/store-collection.jpg" alt="Inside the MTAZIOMS store" loading="lazy">
+      <img src="assets/img/store-rack.jpg" alt="The collection rack" loading="lazy">
+    </div>
+    <div class="visit-info">
+      <h2 class="sec-title" data-i18n="visit_title">Visit the Boutique</h2>
+      <p class="visit-line" id="visitAddress"></p>
+      <p class="visit-line" id="visitHours"></p>
+      <a class="btn btn-ghost" id="mapsLink" href="#" target="_blank" rel="noopener" data-i18n="visit_maps">Open in Google Maps</a>
+    </div>
+  </div>
+</section>
+
+<footer id="contact" class="footer">
+  <div class="wrap footer-in">
+    <img src="assets/img/logo.jpg" alt="" class="footer-logo">
+    <p class="footer-name">MTAZIOMS</p>
+    <p class="footer-tag" data-i18n="footer_tag">Where Elegance Meets Luxury</p>
+    <div class="footer-links">
+      <a id="fWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <a id="fTelegram" href="#" target="_blank" rel="noopener">Telegram</a>
+      <a id="fInstagram" href="#" target="_blank" rel="noopener">Instagram</a>
+      <a id="fTikTok" href="#" target="_blank" rel="noopener">TikTok</a>
+      <a id="fPhone" href="#">Call</a>
+    </div>
+    <p class="footer-copy">© <span id="year"></span> MTAZIOMS ABAYAS — Addis Ababa</p>
+  </div>
+</footer>
+
+<!-- Product modal -->
+<div id="modal" class="modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <button class="modal-close" data-close aria-label="Close">✕</button>
+    <div class="modal-media"><img id="mImg" src="" alt=""></div>
+    <div class="modal-info">
+      <p class="m-cat" id="mCat"></p>
+      <h3 class="m-name" id="mName"></h3>
+      <p class="m-color" id="mColor"></p>
+      <p class="m-desc" id="mDesc"></p>
+      <p class="m-price" id="mPrice"></p>
+      <div class="m-sizes" id="mSizes"></div>
+      <div class="m-actions">
+        <button id="mAdd" class="btn btn-gold" data-i18n="m_add">Add to Order</button>
+        <a id="mDirect" class="btn btn-ghost" href="#" target="_blank" rel="noopener" data-i18n="m_direct">Ask about this piece</a>
+      </div>
+      <p class="m-note" data-i18n="m_note">Confirming stock takes one message — we reply fast.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Cart drawer -->
+<div id="cart" class="cart" hidden>
+  <div class="cart-backdrop" data-closecart></div>
+  <div class="cart-panel">
+    <div class="cart-head">
+      <h3 data-i18n="cart_title">Your Order</h3>
+      <button class="modal-close" data-closecart aria-label="Close">✕</button>
+    </div>
+    <div id="cartItems" class="cart-items"></div>
+    <p id="cartEmpty" class="cart-empty" data-i18n="cart_empty">Your order list is empty. Tap a piece you love and add it.</p>
+    <div class="cart-foot">
+      <input id="cartName" class="cart-input" data-i18n-ph="cart_name_ph" placeholder="Your name">
+      <input id="cartNote" class="cart-input" data-i18n-ph="cart_note_ph" placeholder="Delivery area / notes">
+      <a id="cartSendWA" class="btn btn-gold" href="#" target="_blank" rel="noopener" data-i18n="cart_send_wa">Send Order on WhatsApp</a>
+      <a id="cartSendTG" class="btn btn-ghost" href="#" target="_blank" rel="noopener" data-i18n="cart_send_tg">Send on Telegram</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
