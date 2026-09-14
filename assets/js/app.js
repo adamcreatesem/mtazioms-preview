@@ -37,6 +37,14 @@ const I18N = {
     m_add: 'Add to Order', m_direct: 'Ask about this piece',
     m_note: 'Confirming stock takes one message. We reply fast.',
     cart_title: 'Your Order',
+    form_title: 'Delivery details',
+    cart_name_label: 'Your name',
+    cart_note_label: 'Delivery area / notes',
+    area_hint: 'Popular:',
+    os_pieces: (n) => `${n} ${n === 1 ? 'piece' : 'pieces'}`,
+    os_total: 'Known total',
+    trust_reply: 'Replies in minutes',
+    trust_delivery: 'Free delivery in Addis',
     cart_empty: 'Your order list is empty. Tap a piece you love and add it.',
     cart_name_ph: 'Your name',
     cart_note_ph: 'Delivery area / notes',
@@ -67,6 +75,14 @@ const I18N = {
     m_add: 'ወደ ትዕዛዝ ጨምር', m_direct: 'ስለ እንደዚህ ጠይቅ',
     m_note: 'ያለበትን ለማረጋገጥ አንድ መልእክት ብቻ ይሰፍናል። በፍጥነት እንመልሳለን።',
     cart_title: 'ትዕዛዝዎ',
+    form_title: 'የማድረስ ዝርዝር',
+    cart_name_label: 'ስምዎ',
+    cart_note_label: 'የማድረስ ቦታ / ማስታወሻ',
+    area_hint: 'ተወዳጅ:',
+    os_pieces: (n) => `${n} ቁርጥራጮች`,
+    os_total: 'የሚታወቅ ጠቅላላ',
+    trust_reply: 'በደቂቃዎች ውስጥ እንመልሳለን',
+    trust_delivery: 'በአዲስ አበባ ነጻ ማድረስ',
     cart_empty: 'ትዕዛዝዎ ባዶ ነው። የሚወዱትን በጫኑ ይጨምሩ።',
     cart_name_ph: 'ስምዎ',
     cart_note_ph: 'የማድረስ ቦታ / ማስታወሻ',
@@ -210,6 +226,16 @@ function renderCart() {
     saveCart();
     renderCart();
   }));
+  // order summary: count + total of known prices only (never fabricate, Rule 29)
+  const known = state.cart
+    .map((item) => state.products.find((x) => x.id === item.id))
+    .filter((p) => p && p.price != null);
+  const total = known.reduce((sum, p) => sum + p.price, 0);
+  $('#osCount').textContent = t('os_pieces')(state.cart.length);
+  $('#osTotal').innerHTML = known.length
+    ? `${total.toLocaleString()}<span class="os-known">${t('os_total')}</span>`
+    : '';
+  $('#orderSummary').hidden = state.cart.length === 0;
 }
 function orderText() {
   const name = $('#cartName').value.trim();
@@ -287,6 +313,15 @@ async function boot() {
   // marquee: duplicate the item set once for a seamless -50% loop (clones keep data-i18n)
   const track = $('#stripTrack');
   if (track) [...track.children].forEach((child) => track.appendChild(child.cloneNode(true)));
+
+  // popular delivery areas: one tap fills the note field
+  const AREAS = ['Jemo 1', 'Bole', 'Megenagna', 'Ayat', 'Sarbet', 'Piassa'];
+  const pills = $('#areaPills');
+  pills.innerHTML = AREAS.map((a) => `<button class="area-pill" type="button">${a}</button>`).join('');
+  $$('.area-pill', pills).forEach((btn) => btn.addEventListener('click', () => {
+    $('#cartNote').value = btn.textContent + ', Addis Ababa';
+    $('#cartNote').focus();
+  }));
 
   // section reveal on scroll (static elements only; cards stagger in renderGrid)
   const io = new IntersectionObserver((entries) => {
